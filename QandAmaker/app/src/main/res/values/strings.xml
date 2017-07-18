@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">QandAmaker</string>
+    <string name="action_settings">Settings</string>
+    <string name="question">問題</string>
+    <string name="answer">解答</string>
+    <string name="title_activity_question">QuestionActivity</string>
+    <string name="title_activity_detail_quiz">DetailQuizActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <item name="viewpager" type="id" />
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

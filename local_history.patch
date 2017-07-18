@@ -1,0 +1,74 @@
+Index: app/src/main/java/unifar/unifar/qandamaker/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/unifar/unifar/qandamaker/MainActivity.java	(revision )
++++ app/src/main/java/unifar/unifar/qandamaker/MainActivity.java	(revision )
+@@ -26,23 +26,28 @@
+ 
+     ArrayList<HashMap<String,String>> listData;
+     HashMap<String,String> hashTemp;
+-    SimpleAdapter simp;
++     SimpleAdapter simp;
+     CustomizedDialog_questionbook customizedDialog_questionbook;
++    public ListView R_id_listview ;
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+-
+         listData =new ArrayList<>();
+-        hashTemp=new HashMap<>();
++
++        R_id_listview= (ListView)findViewById(R.id.listView);
++        ((ListView)findViewById(R.id.listView)).setAdapter(simp);
+         simp = new SimpleAdapter(getApplicationContext(),
+                 listData, R.layout.twolineitems,
+                 new String[]{"main", "right"}, new int[]{R.id.item_main, R.id.item_right});
+ 
++        listadd("FG","B");
+ 
+-         listadd("TEST","C");
+ 
++        ((ListView)findViewById(R.id.listView)).setAdapter(simp);
++
+         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
++        customizedDialog_questionbook =new CustomizedDialog_questionbook();
+         fab.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view)  {
+@@ -82,16 +87,19 @@
+ 
+ 
+         Log.d("OnQBookBoxOkClick","呼ばれたよん");
+-
+-
++        hashTemp=new HashMap<String, String>();
++        listData =new ArrayList<HashMap<String, String>>();
+         hashTemp.put("main",main);
+         hashTemp.put("right",eva);
+-        listData.add(new HashMap<>(hashTemp));
+-        hashTemp.clear();
++        listData.add(hashTemp);
++        //this.simp.notifyDataSetChanged();
+         ((ListView)findViewById(R.id.listView)).setAdapter(simp);
++        hashTemp.clear();
++
+     }
+-    public void onResume(){
+-        super.onResume();
++    public void onmyResume(){
++        //super.onResume();
++        customizedDialog_questionbook =new CustomizedDialog_questionbook();
+         Log.d("OnQBookBoxOkClick","onresumeされたよ");
+         if (customizedDialog_questionbook.listaddflag==1){
+             listadd(customizedDialog_questionbook.questionStr,"A");
+@@ -100,6 +108,7 @@
+         }
+ 
+     };
++
+ 
+ 
+ 
