@@ -11,5 +11,6 @@ public class FlashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flash);
         //test
         //test2
+        //test3
     }
 }
