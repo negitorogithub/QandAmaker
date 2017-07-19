@@ -41,6 +41,7 @@ public class Fragment_flash extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle args = getArguments();
         str_question_name= args.getString("question_name");
         str_answer_name = args.getString("answer_name");
@@ -53,10 +54,9 @@ public class Fragment_flash extends Fragment  {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView;
-        rootView = inflater.inflate(R.layout.activity_detail_quiz, container,false);
+        rootView = inflater.inflate(R.layout.fragment_fragment_flash, container,false);
         final TextView textView_switch = (TextView)rootView.findViewById(R.id.textview_switch);
         textView_switch.setText(str_question_name);
-        mViewPager = (ViewPager) rootView.findViewById(R.id.container_detail_quiz);
 
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
