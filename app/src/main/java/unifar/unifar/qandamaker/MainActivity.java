@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     public static ArrayList<HashMap<String,String>> qlistData;
     public static ArrayList<HashMap<String,String>> alistData;
     public static String mainValue;
+    public static String mainValue_longclick;
     public HashMap<String,String> hashTemp;
     static SimpleAdapter simp;
     static SimpleAdapter qsimp;
@@ -65,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         R_id_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("OnQbook",String.valueOf((listData.get(position)).get("main")));
+                mainValue_longclick =(listData.get(position)).get("main");
+                Log.d("OnQbook",String.valueOf(mainValue_longclick));
                 int_onLonglistView_Position=position;
                 DialogFragment dialogFragment = MyAlarm.newInstance();
                 dialogFragment.show(getFragmentManager(),"Alart");

@@ -43,12 +43,10 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
      * The {@link ViewPager} that will host the section contents.
      */
     public static ViewPager mViewPager;
-    MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_quiz);
-        mainActivity = new MainActivity();
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         int_flag_first=-1;
         setSupportActionBar(toolbar);
@@ -60,15 +58,6 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
         mViewPager = (ViewPager) findViewById(R.id.container_detail_quiz);
         mViewPager.setId(R.id.container_detail_quiz);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
     }
 
