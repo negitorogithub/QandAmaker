@@ -1,5 +1,6 @@
 package unifar.unifar.qandamaker;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
@@ -42,12 +43,10 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
      * The {@link ViewPager} that will host the section contents.
      */
     public static ViewPager mViewPager;
-    MainActivity mainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_quiz);
-        mainActivity = new MainActivity();
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         int_flag_first=-1;
         setSupportActionBar(toolbar);
@@ -59,15 +58,6 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
         mViewPager = (ViewPager) findViewById(R.id.container_detail_quiz);
         mViewPager.setId(R.id.container_detail_quiz);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
     }
 
@@ -124,7 +114,7 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+        public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail_quiz, container, false);
             final TextView textview_switch_name = (TextView) rootView.findViewById(R.id.questionName);
@@ -157,15 +147,13 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
             button_to_flash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Fragment_flash fragment_flash = Fragment_flash.newInstance();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("question_name",str_question_name);
-                    bundle.putString("answer_name",str_answer_name);
-                    fragment_flash.setArguments(bundle);
-                    FragmentManager fragmentManager = getChildFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.container_detail_flash,fragment_flash);
-                    fragmentTransaction.commit();
+                    Intent intent = new Intent(MyApplication.getAppContext(),FlashActivity.class);
+
+                    intent.putExtra("question_name",str_question_name);
+                    intent.putExtra("answer_name",str_answer_name);
+
+                    startActivity(intent);
+
                 }
             });
 

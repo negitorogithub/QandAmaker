@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 
@@ -26,6 +27,7 @@ public class Fragment_flash extends Fragment  {
     public String str_question_name;
     public String str_answer_name;
     public static ViewPager mViewPager;
+    public static int int_seekBar_progress;
 
     private OnFragmentInteractionListener mListener;
 
@@ -41,6 +43,7 @@ public class Fragment_flash extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle args = getArguments();
         str_question_name= args.getString("question_name");
         str_answer_name = args.getString("answer_name");
@@ -53,10 +56,40 @@ public class Fragment_flash extends Fragment  {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView;
-        rootView = inflater.inflate(R.layout.activity_detail_quiz, container,false);
+        rootView = inflater.inflate(R.layout.fragment_fragment_flash, container,false);
         final TextView textView_switch = (TextView)rootView.findViewById(R.id.textview_switch);
+        SeekBar seekBar = (SeekBar)rootView.findViewById(R.id.seekBar_flash);
+        int_seekBar_progress = 100;
+        seekBar.setProgress(int_seekBar_progress);
+        seekBar.setMax(5000);
+
+
+        seekBar.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener(){
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        int_seekBar_progress = progress;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                }
+
+
+
+
+
+        );
+
         textView_switch.setText(str_question_name);
-        mViewPager = (ViewPager) rootView.findViewById(R.id.container_detail_quiz);
 
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
@@ -76,7 +109,7 @@ public class Fragment_flash extends Fragment  {
 
 
                 }
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, int_seekBar_progress);
             }
         };
         handler.post(r);
