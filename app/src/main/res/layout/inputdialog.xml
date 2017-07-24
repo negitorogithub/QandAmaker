@@ -35,18 +35,21 @@
         android:inputType="textMultiLine" />
 
     <LinearLayout
+        android:layout_weight="0.7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
+             style="?android:attr/buttonBarButtonStyle"
              android:id="@+id/close_Button"
              android:layout_width="match_parent"
-             android:layout_height="wrap_content"
+             android:layout_height="match_parent"
              android:layout_weight="1"
              android:text="close" />
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/ok_Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Ok" />
     </LinearLayout>

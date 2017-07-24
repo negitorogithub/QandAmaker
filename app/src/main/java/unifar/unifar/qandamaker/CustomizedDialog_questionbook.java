@@ -99,12 +99,11 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public  void onActivityCreated(Bundle savedInstansState){
         super.onActivityCreated(savedInstansState);
-
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        lp.width = (int) (metrics.widthPixels*1.4);
-        lp.height =(int)(metrics.widthPixels*0.9);
+        lp.width = (int) (metrics.widthPixels*1.0);
         dialog.getWindow().setAttributes(lp);
+
 
     }
 

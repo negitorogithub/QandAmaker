@@ -45,16 +45,13 @@ public class MyCustomizedDialog extends DialogFragment{
 
         okButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
+                if (questionStr.equals(""))
             mainActivity.listadd(questionStr,"A");
-
                 dialog.dismiss();
             }
         });
         closeButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
-
                 dialog.dismiss();
             }
         });
@@ -67,7 +64,6 @@ public class MyCustomizedDialog extends DialogFragment{
     WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
     DisplayMetrics metrics = getResources().getDisplayMetrics();
     lp.width = (int) (metrics.widthPixels*1.0);
-    lp.height =(int)(metrics.widthPixels*0.6);
     dialog.getWindow().setAttributes(lp);
 }
     @Override

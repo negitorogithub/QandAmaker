@@ -2,30 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <EditText
-        android:id="@+id/questionbox"
-        android:inputType="text"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    >
+
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
-        android:hint="問題集名" />
+        >
+
+        <EditText
+            android:id="@+id/questionbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="16dp"
+            android:hint="@string/hint_question_name"
+            android:inputType="textMultiLine"
+            android:minLines="1" />
+    </ScrollView>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/close_Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="close" />
+
+
+
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/ok_Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Ok" />
     </LinearLayout>
