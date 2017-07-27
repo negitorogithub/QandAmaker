@@ -31,7 +31,6 @@ public class MyAlarm extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("OnQBookBoxOkClick", String.valueOf("リスト:"+MainActivity.listData));
                         mainActivity.onClickOk_myalarm();
                     }
                 })

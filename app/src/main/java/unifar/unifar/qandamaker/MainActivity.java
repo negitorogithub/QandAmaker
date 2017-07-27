@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d("onqbook",removeExtension("aaaa.txt"));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewFlag = 1;
@@ -70,7 +73,13 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         R_id_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                mainValue_longclick = (listData.get(position)).get("main");
+                if (viewFlag == 1) {
+                    mainValue_longclick = (listData.get(position)).get("main");
+                }
+                if (viewFlag == 2) {
+                    mainValue_longclick = (qlistData.get(position)).get("main");
+                }
+
                 Log.d("OnQbook", String.valueOf(mainValue_longclick));
                 int_onLonglistView_Position = position;
                 DialogFragment dialogFragment = MyAlarm.newInstance();
@@ -84,13 +93,14 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int_listview_position = position;
-                mainValue = listData.get(position).get("main");
                 if (viewFlag == 1) {
                     viewFlag = 2;
+                    Log.d("OnQbook", "1 -> 2");
                     //クイズの画面に遷移
+                    mainValue = listData.get(position).get("main");
                     qlistData.clear();
                     alistData.clear();
-                    inputfromFile(plusTxt(String.valueOf(mainValue)));
+                    inputfromFile(String.valueOf(mainValue));
                     (R_id_listview).setAdapter(qsimp);
                     return;
                 }
@@ -165,28 +175,38 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     public void onClickOk() {
         if (viewFlag == 1) {
             listData.clear();
-            makefiles(plusTxt(CustomizedDialog_questionbook.questionStr));
+            makefiles(CustomizedDialog_questionbook.questionStr);
             inputQbookFiles();
         }
         if (viewFlag == 2) {
             qlistData.clear();
             alistData.clear();
-            outputtoFile(plusTxt(mainValue), CustomizedDialog_questionbook.questionStr);
-            outputtoFile(plusTxt(mainValue), CustomizedDialog_questionbook.answerStr);
-            for (int i = 0; i < 4; i++) {
-                outputtoFile(plusTxt(mainValue), String.valueOf(i));
+            outputtoFile(mainValue, CustomizedDialog_questionbook.questionStr);
+            outputtoFile(mainValue, CustomizedDialog_questionbook.answerStr);
+            for (int i = 0; i < 98; i++) {
+                outputtoFile(mainValue, String.valueOf(i));
             }
-            inputfromFile(plusTxt(mainValue));
+            inputfromFile(mainValue);
         }
     }
 
     public void onClickOk_myalarm() {
         Log.d("OnQBookBoxOkClick", "ポジション:" + String.valueOf(int_onLonglistView_Position));
         Log.d("OnQBookBoxOkClick", "データ:" + String.valueOf(plusTxt(mainValue_longclick)));
-        MyApplication.getAppContext().deleteFile(plusTxt(mainValue_longclick));
-        listData.clear();
-        inputQbookFiles();
-        simp.notifyDataSetChanged();
+        if (viewFlag == 1) {
+            MyApplication.getAppContext().deleteFile(plusTxt(mainValue_longclick));
+            listData.clear();
+            inputQbookFiles();
+            simp.notifyDataSetChanged();
+        }
+        if (viewFlag == 2) {
+            delete100Line(mainValue, int_onLonglistView_Position, "qsimp");
+            alistData.clear();
+            qlistData.clear();
+            inputfromFile(mainValue);
+            qsimp.notifyDataSetChanged();
+        }
+
         /* Snackbar.make(findViewById(R.id.activityMain_relativeLayout), "Snackbar test", Snackbar.LENGTH_LONG)
                 .setAction("OK", new View.OnClickListener() {
                     @Override
@@ -198,10 +218,11 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         */
     }
 
-    public void outputtoFile(String file, String str) {
+    void outputtoFile(String file, String str) {
+        removeExtension(file);
         FileOutputStream fileOutputStream;
         try {
-            fileOutputStream = openFileOutput(file, MODE_APPEND);
+            fileOutputStream = MyApplication.getAppContext().openFileOutput(plusTxt(file), MODE_APPEND);
             fileOutputStream.write(str.getBytes());
             fileOutputStream.write(13);
             fileOutputStream.write(10);
@@ -213,22 +234,23 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
 
     }
 
-    public void inputfromFile(String file) {
+    void inputfromFile(String file) {
+        removeExtension(file);
         FileInputStream fileInputStream;
         String text = null;
         int line = 0;
         try {
-            fileInputStream = openFileInput(file);
+            fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
             String lineBuffer = null;
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 1024);
             while ((lineBuffer = bufferedReader.readLine()) != null) {
                 text = lineBuffer;
                 switch (viewFlag) {
                     case 1:
-                        listadd(text, "B", "simp");
+                        Log.d("onqbook","Don't call inputfromFile on viewFlag = 1");
                         break;
                     case 2:
-                        switch (line % 6) {
+                        switch (line % 100) {
                             case 0:
                                 listadd(text, "Q", "qsimp");
                                 break;
@@ -237,11 +259,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                                 break;
                             case 2:
                                 break;
-                            case 3:
-                                break;
-                            case 4:
-                                break;
-                            case 5:
+                            // 2-99 lines are empty.
+                            case 99:
                                 break;
 
 
@@ -259,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     private void resetfiles(String file) {
         FileOutputStream fileOutputStream;
         try {
-            fileOutputStream = openFileOutput(file, MODE_PRIVATE);
+            fileOutputStream = MyApplication.getAppContext().openFileOutput(plusTxt(file), MODE_PRIVATE);
             fileOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -280,9 +299,11 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (viewFlag == 2) {
+                Log.d("OnQbook", "2 -> 1");
                 viewFlag = 1;
                 listData.clear();
                 inputQbookFiles();
+                R_id_listview.setAdapter(simp);
                 simp.notifyDataSetChanged();
                 return false;
             } else {
@@ -326,6 +347,42 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                     alistData.remove(i);
                 }
         }
+    }
+    public void delete100Line(String file , int index , String adapter){
+        removeExtension(file);
+        FileInputStream fileInputStream;
+        String text = "";
+        ArrayList<String> text_buffer =new ArrayList<>();
+        int line = 1;
+        int delta = 0;
+        try {
+            fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
+            String lineBuffer = null;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 8192);
+            while ((lineBuffer = bufferedReader.readLine()) != null) {
+                text = lineBuffer;
+                delta = line - index*100;
+                if ((delta>0)&(delta<101)){
+                    // do nothing
+                }else {
+                    switch (adapter){
+                        case "qsimp":
+                            text_buffer.add(text);
+                            break;
+                    }
+                }
+                line++;
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        resetfiles(file);
+            for(int i = 0; i < text_buffer.size(); i++){
+                outputtoFile(file, text_buffer.get(i));
+        }
+
+
     }
 }
 
