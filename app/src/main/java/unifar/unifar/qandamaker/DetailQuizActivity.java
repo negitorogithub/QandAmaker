@@ -37,18 +37,16 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    public static int int_flag_first;
+    public SectionsPagerAdapter mSectionsPagerAdapter;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    public static ViewPager mViewPager;
+    public ViewPager mViewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_quiz);
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        int_flag_first=-1;
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -58,6 +56,7 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
         mViewPager = (ViewPager) findViewById(R.id.container_detail_quiz);
         mViewPager.setId(R.id.container_detail_quiz);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(MainActivity.int_listview_position);
 
     }
 
@@ -157,10 +156,6 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
                 }
             });
 
-            if (int_flag_first != 1) {
-                mViewPager.setCurrentItem(MainActivity.int_listview_position);
-                int_flag_first =1;
-            }
 
             Log.d("onqbook",String.valueOf(bundle.getInt(ARG_SECTION_NUMBER)-1));
             return rootView;

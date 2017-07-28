@@ -7,5 +7,6 @@
     <string name="title_activity_detail_quiz">DetailQuizActivity</string>
     <string name="Qbook_delete">一度消去した問題集と、そのデータは二度と元に戻せません。それでも&lt;u>&lt;i>&lt;b>%1$s&lt;/b>&lt;/i>&lt;/u>を消去しますか？</string>
     <string name="hint_question_name">問題集名</string>
+    <string name="Tag">タグ</string>
     <item name="viewpager" type="id" />
 </resources>
