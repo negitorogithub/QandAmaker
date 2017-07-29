@@ -12,6 +12,27 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+
+
+
+
+/*
+
+
+--------------------------------------------
+
+あるだけ！！
+
+--------------------------------------------
+
+
+ */
+
+
+
+
+
+
 public class MyCustomizedDialog extends DialogFragment{
     Button okButton;
     Button closeButton;

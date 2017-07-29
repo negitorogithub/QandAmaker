@@ -24,6 +24,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 
 import static unifar.unifar.qandamaker.CustomizedDialog_questionbook.answerStr;
 import static unifar.unifar.qandamaker.CustomizedDialog_questionbook.newInstance;
@@ -235,43 +236,33 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     }
 
     void inputfromFile(String file) {
-        removeExtension(file);
         FileInputStream fileInputStream;
         String text = null;
-        int line = 0;
-        try {
-            fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
-            String lineBuffer = null;
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 1024);
-            while ((lineBuffer = bufferedReader.readLine()) != null) {
-                text = lineBuffer;
-                switch (viewFlag) {
-                    case 1:
-                        Log.d("onqbook","Don't call inputfromFile on viewFlag = 1");
-                        break;
-                    case 2:
-                        switch (line % 100) {
-                            case 0:
-                                listadd(text, "Q", "qsimp");
-                                break;
-                            case 1:
-                                listadd(text, "A", "alist");
-                                break;
-                            case 2:
-                                break;
-                            // 2-99 lines are empty.
-                            case 99:
-                                break;
+        ArrayList<String> textBuffer;
+        textBuffer = inputFromFileToArray(file);
+        for (int i = 0; i < textBuffer.size();i++) {
+            switch (viewFlag) {
+                case 1:
+                    Log.d("onqbook", "Don't call inputfromFile on viewFlag = 1");
+                    break;
+                case 2:
+                    switch (i % 100) {
+                        case 0:
+                            listadd(textBuffer.get(i), "Q", "qsimp");
+                            break;
+                        case 1:
+                            listadd(textBuffer.get(i), "A", "alist");
+                            break;
+                        case 2:
+                            break;
+                        // 2-99 lines are empty.
+                        case 99:
+                            break;
 
 
-                        }
+                    }
 
-                }
-                line++;
             }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -331,51 +322,23 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         return newName;
     }
 
-    public static void deleteListViewData(String adapter) {
-        switch (adapter) {
-            case "simp":
-                for (int i = 0; i < listData.size(); i++) {
-                    listData.remove(i);
-                }
-                break;
-            case "qsimp":
-                for (int i = 0; i < qlistData.size(); i++) {
-                    qlistData.remove(i);
-                }
-            case "alist":
-                for (int i = 0; i < alistData.size(); i++) {
-                    alistData.remove(i);
-                }
-        }
-    }
     public void delete100Line(String file , int index , String adapter){
-        removeExtension(file);
-        FileInputStream fileInputStream;
-        String text = "";
+
         ArrayList<String> text_buffer =new ArrayList<>();
-        int line = 1;
-        int delta = 0;
-        try {
-            fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
-            String lineBuffer = null;
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 8192);
-            while ((lineBuffer = bufferedReader.readLine()) != null) {
-                text = lineBuffer;
-                delta = line - index*100;
-                if ((delta>0)&(delta<101)){
-                    // do nothing
-                }else {
-                    switch (adapter){
-                        case "qsimp":
-                            text_buffer.add(text);
-                            break;
-                    }
+        ArrayList<String> textBufferBuffer = inputFromFileToArray(file);
+        int delta ;
+        for (int i = 0;i < textBufferBuffer.size(); i++){
+            delta = i+1 - index*100;
+            if ((delta>0)&(delta<101)){
+                // do nothing
+            }else {
+                switch (adapter){
+                    case "qsimp":
+                        text_buffer.add(textBufferBuffer.get(i) );
+                        break;
                 }
-                line++;
             }
-            bufferedReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+
         }
         resetfiles(file);
             for(int i = 0; i < text_buffer.size(); i++){
@@ -383,6 +346,34 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         }
 
 
+    }
+    public Set<String> makeTagSetfromFile(String file){
+
+
+
+        return null;
+    }
+    public ArrayList<String> inputFromFileToArray(String file){
+        ArrayList<String> contentsArray = null;
+        removeExtension(file);
+        FileInputStream fileInputStream;
+        String text = null;
+        int line = 0;
+        try {
+            fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
+            String lineBuffer = null;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 10000);
+            contentsArray = new ArrayList<>();
+            while ((lineBuffer = bufferedReader.readLine()) != null) {
+                text = lineBuffer;
+                contentsArray.add(text);
+                line++;
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contentsArray;
     }
 }
 

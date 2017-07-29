@@ -17,9 +17,10 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     private EditText et_question;
     private EditText answerInput;
     private Dialog dialog;
-    MainActivity mainActivity = new MainActivity();
+    MainActivity mainActivity;
     public static String questionStr;
     public static String answerStr;
+    public static String str_tag_name;
     public DialogListener dialogListener;
     public static int listaddflag;
 
@@ -65,6 +66,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         }else{
             view = inflater.inflate(R.layout.inputdialog, null, false);
             answerInput = (EditText) view.findViewById(R.id.answerbox);
+
         }
         Button okButton = (Button) view.findViewById(R.id.ok_Button);
         Button closeButton = (Button) view.findViewById(R.id.close_Button);
