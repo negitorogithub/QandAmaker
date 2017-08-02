@@ -9,21 +9,29 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 public class CustomizedDialog_questionbook extends DialogFragment {
     private EditText et_question;
     private EditText answerInput;
+    private EditText tagInput;
+    private Spinner tagSpinner;
+    private ArrayAdapter<String> tagSpinnerAdapter;
     private Dialog dialog;
+    private boolean str_tag_name_flag;
     MainActivity mainActivity;
-    public static String questionStr;
-    public static String answerStr;
-    public static String str_tag_name;
+    public  String questionStr;
+    public  String answerStr;
+    public  String str_tag_name;
     public DialogListener dialogListener;
-    public static int listaddflag;
-
+    CustomizedDialog_questionbook customizedDialog_questionbook;
     public static CustomizedDialog_questionbook newInstance() {
         CustomizedDialog_questionbook fragment = new CustomizedDialog_questionbook();
         return fragment;
@@ -54,20 +62,77 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        if (MainActivity.viewFlag == 3) {
+            MainActivity.viewFlag =2;
+            Log.d("onqbook","3 -> 2");
+        }
         dialogListener = null;
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view ;
-        if (MainActivity.viewFlag == 1) {
-            view = inflater.inflate(R.layout.questionbookinput, null, false);
-        }else{
-            view = inflater.inflate(R.layout.inputdialog, null, false);
-            answerInput = (EditText) view.findViewById(R.id.answerbox);
+        str_tag_name_flag = false;
+        View view = null;
+        if (MainActivity.viewFlag != 1 && MainActivity.viewFlag != 2 && MainActivity.viewFlag != 3){
+            Log.d("onqbook","viewFlag:"+MainActivity.viewFlag+"に対応するダイアログはありません。");
+        } else {
+            switch (MainActivity.viewFlag) {
+                case 1:
+                    view = inflater.inflate(R.layout.questionbookinput,null , false);
 
+                break;
+                case 2:
+                    view = inflater.inflate(R.layout.inputdialog, null, false);
+                    answerInput = (EditText) view.findViewById(R.id.answerbox);
+
+                    tagSpinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
+                    tagSpinnerAdapter.add("【新規作成】");
+                    tagSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    tagSpinner = (NDSpinner) view.findViewById(R.id.tagSpinner);
+                    tagSpinner.setFocusable(false);
+                    tagSpinner.setAdapter(tagSpinnerAdapter);
+
+                    tagSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                            if (tagSpinner.isFocusable() == false) {
+                                tagSpinner.setFocusable(true);
+                                Log.d("onqbook","初回起動");
+                            } else {
+                                if (position == 0) {
+                                    //タグ新規作成のダイアログ作成
+                                    if (MainActivity.viewFlag ==2){
+                                        MainActivity.viewFlag = 3;
+                                        Log.d("onqbook","2 -> 3");
+                                    }
+                                    final CustomizedDialog_questionbook dialog = newInstance();
+                                    dialog.show(getFragmentManager(), "dialog_fragment");
+                                    Log.d("onqbook","ダイアログ作成");
+                                } else {
+                                    //タグ書き込み
+                                }
+                                tagSpinnerAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            // do nothing
+                        }
+                    });
+                    tagSpinnerAdapter.notifyDataSetChanged();
+
+                break;
+                case 3:
+                    view = inflater.inflate(R.layout.tag_edit_dialog, null, false);
+                    tagInput =(EditText)view.findViewById(R.id.tagBox);
+                break;
+            }
         }
+
         Button okButton = (Button) view.findViewById(R.id.ok_Button);
         Button closeButton = (Button) view.findViewById(R.id.close_Button);
         et_question = (EditText) view.findViewById(R.id.questionbox);
@@ -77,12 +142,20 @@ public class CustomizedDialog_questionbook extends DialogFragment {
 
         okButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                SpannableStringBuilder sb1 = (SpannableStringBuilder)et_question.getText();
-                questionStr =sb1.toString();
-                if (MainActivity.viewFlag == 2) {
-                    SpannableStringBuilder sb2 = (SpannableStringBuilder) answerInput.getText();
-                    answerStr = sb2.toString();
+                if (MainActivity.viewFlag ==1 || MainActivity.viewFlag ==2 ) {
+                    questionStr =  ifNullReplace(String.valueOf(et_question.getText()));
+                    if (MainActivity.viewFlag == 2) {
+                        answerStr = ifNullReplace(String.valueOf(answerInput.getText()));
+                        if (!str_tag_name_flag){
+                            str_tag_name = "";
+                        }
+                    }
                 }
+                if (MainActivity.viewFlag == 3) {
+                    str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
+                    str_tag_name_flag = true;
+                }
+
                 Log.d("OnQBookBoxOkClick","QuestionStrは  "+questionStr);
                     if (dialogListener != null) {
                         dialogListener.onClickOk();
@@ -92,7 +165,6 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         });
         closeButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
                 dialog.dismiss();
             }
         });
@@ -107,6 +179,12 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         dialog.getWindow().setAttributes(lp);
 
 
+    }
+    public static String ifNullReplace(String string){
+        if (string == null){
+            return "";
+        }
+        return string;
     }
 
 }

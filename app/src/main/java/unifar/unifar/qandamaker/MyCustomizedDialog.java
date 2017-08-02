@@ -41,10 +41,6 @@ public class MyCustomizedDialog extends DialogFragment{
     Dialog dialog;
     MainActivity mainActivity=new MainActivity();
     String questionStr;
-    public static MyCustomizedDialog newInstance() {
-        MyCustomizedDialog fragment = new MyCustomizedDialog();
-        return fragment;
-    }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();

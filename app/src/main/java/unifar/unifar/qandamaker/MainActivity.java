@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,12 +25,17 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
-
-import static unifar.unifar.qandamaker.CustomizedDialog_questionbook.answerStr;
 import static unifar.unifar.qandamaker.CustomizedDialog_questionbook.newInstance;
 
 public class MainActivity extends AppCompatActivity implements DialogListener {
+
+    public static final int INT_QfileLinesPerOneQuestion = 100;
+    public static final int INT_QfileQuestioniIndex = 0;
+    public static final int INT_QfileAnswerIndex = 1;
+    public static final int INT_QfileTagIndex = 2;
+
 
     public static int viewFlag;
     public static int int_listview_position;
@@ -42,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     public static HashMap<String, String> hashTemp;
     static SimpleAdapter simp;
     static SimpleAdapter qsimp;
-    CustomizedDialog_questionbook customizedDialog_questionbook;
+    public CustomizedDialog_questionbook customizedDialog_questionbook;
     ListView R_id_listview;
     public static int int_onLonglistView_Position;
 
@@ -118,8 +124,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final CustomizedDialog_questionbook dialog = newInstance();
-                dialog.show(getFragmentManager(), "dialog_fragment");
+                customizedDialog_questionbook.show(getFragmentManager(), "dialog_fragment");
             }
         });
 
@@ -153,11 +158,14 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         hashTemp.put("main", main);
         hashTemp.put("right", eva);
         if ("simp" == adapter) {
+
             listData.add(new HashMap<>(hashTemp));
+            simp.notifyDataSetChanged();
             return;
         }
         if ("qsimp" == adapter) {
             qlistData.add(new HashMap<>(hashTemp));
+            qsimp.notifyDataSetChanged();
             return;
         }
         if ("alist" == adapter) {
@@ -176,19 +184,24 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     public void onClickOk() {
         if (viewFlag == 1) {
             listData.clear();
-            makefiles(CustomizedDialog_questionbook.questionStr);
+            makefiles(customizedDialog_questionbook.questionStr);
             inputQbookFiles();
         }
         if (viewFlag == 2) {
             qlistData.clear();
             alistData.clear();
-            outputtoFile(mainValue, CustomizedDialog_questionbook.questionStr);
-            outputtoFile(mainValue, CustomizedDialog_questionbook.answerStr);
-            for (int i = 0; i < 98; i++) {
+            outputtoFile(mainValue, customizedDialog_questionbook.questionStr);
+            outputtoFile(mainValue, customizedDialog_questionbook.answerStr);
+            outputtoFile(mainValue, customizedDialog_questionbook.str_tag_name);
+            for (int i = 0; i < 97; i++) {
                 outputtoFile(mainValue, String.valueOf(i));
             }
             inputfromFile(mainValue);
         }
+        if (viewFlag == 3) {
+            //do nothing
+        }
+
     }
 
     public void onClickOk_myalarm() {
@@ -236,29 +249,26 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     }
 
     void inputfromFile(String file) {
-        FileInputStream fileInputStream;
-        String text = null;
         ArrayList<String> textBuffer;
         textBuffer = inputFromFileToArray(file);
         for (int i = 0; i < textBuffer.size();i++) {
             switch (viewFlag) {
                 case 1:
-                    Log.d("onqbook", "Don't call inputfromFile on viewFlag = 1");
+                    Log.d("onqbook", "viewFlag = 1でinputfromFileを呼ばないでください");
                     break;
                 case 2:
-                    switch (i % 100) {
-                        case 0:
+                    switch (i % INT_QfileLinesPerOneQuestion) {
+                        case INT_QfileQuestioniIndex:
                             listadd(textBuffer.get(i), "Q", "qsimp");
                             break;
-                        case 1:
+                        case INT_QfileAnswerIndex:
                             listadd(textBuffer.get(i), "A", "alist");
                             break;
-                        case 2:
+                        case INT_QfileTagIndex:
                             break;
-                        // 2-99 lines are empty.
-                        case 99:
+                        // 3-99 lines are empty.
+                        case INT_QfileLinesPerOneQuestion-1:
                             break;
-
 
                     }
 
@@ -281,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         resetfiles(file);
     }
 
-    public String plusTxt(String str) {
+    public static String plusTxt(String str) {
         return str + ".txt";
     }
 
@@ -328,8 +338,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         ArrayList<String> textBufferBuffer = inputFromFileToArray(file);
         int delta ;
         for (int i = 0;i < textBufferBuffer.size(); i++){
-            delta = i+1 - index*100;
-            if ((delta>0)&(delta<101)){
+            delta = i+1 - index*INT_QfileLinesPerOneQuestion;
+            if ((delta>0)&(delta<INT_QfileLinesPerOneQuestion+1)){
                 // do nothing
             }else {
                 switch (adapter){
@@ -348,12 +358,15 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
 
     }
     public Set<String> makeTagSetfromFile(String file){
-
-
-
-        return null;
+        Set<String> tagSet =new HashSet<>();
+        ArrayList<String> text_buffer ;
+        text_buffer = inputFromFileToArray(file);
+        for (int i = INT_QfileTagIndex; i < text_buffer.size(); i = i+INT_QfileLinesPerOneQuestion){
+            tagSet.add(text_buffer.get(i));
+        }
+        return tagSet;
     }
-    public ArrayList<String> inputFromFileToArray(String file){
+    public static ArrayList<String> inputFromFileToArray(String file){
         ArrayList<String> contentsArray = null;
         removeExtension(file);
         FileInputStream fileInputStream;
