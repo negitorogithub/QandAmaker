@@ -4,19 +4,18 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
+
+import java.util.HashSet;
 
 public class CustomizedDialog_questionbook extends DialogFragment {
     private EditText et_question;
@@ -25,16 +24,13 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     private Spinner tagSpinner;
     private ArrayAdapter<String> tagSpinnerAdapter;
     private Dialog dialog;
-    private boolean str_tag_name_flag;
-    MainActivity mainActivity;
+    public HashSet<String> tagSet;
     public  String questionStr;
     public  String answerStr;
     public  String str_tag_name;
     public DialogListener dialogListener;
-    CustomizedDialog_questionbook customizedDialog_questionbook;
     public static CustomizedDialog_questionbook newInstance() {
-        CustomizedDialog_questionbook fragment = new CustomizedDialog_questionbook();
-        return fragment;
+        return new CustomizedDialog_questionbook();
     }
 
     @Override
@@ -57,11 +53,13 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         if (context instanceof DialogListener) {
             dialogListener = (DialogListener) context;
         }
+        tagSet = new HashSet<>(MainActivity.taglistData);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        onSaveInstanceState(Bundle.EMPTY);
         if (MainActivity.viewFlag == 3) {
             MainActivity.viewFlag =2;
             Log.d("onqbook","3 -> 2");
@@ -72,7 +70,6 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        str_tag_name_flag = false;
         View view = null;
         if (MainActivity.viewFlag != 1 && MainActivity.viewFlag != 2 && MainActivity.viewFlag != 3){
             Log.d("onqbook","viewFlag:"+MainActivity.viewFlag+"に対応するダイアログはありません。");
@@ -88,6 +85,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
 
                     tagSpinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
                     tagSpinnerAdapter.add("【新規作成】");
+                    addTagSetTotagSpinnerAdapter();
                     tagSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                     tagSpinner = (NDSpinner) view.findViewById(R.id.tagSpinner);
@@ -141,19 +139,18 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         dialog.setContentView(view);
 
         okButton.setOnClickListener(new View.OnClickListener(){
+
             public void onClick(View v){
                 if (MainActivity.viewFlag ==1 || MainActivity.viewFlag ==2 ) {
                     questionStr =  ifNullReplace(String.valueOf(et_question.getText()));
                     if (MainActivity.viewFlag == 2) {
                         answerStr = ifNullReplace(String.valueOf(answerInput.getText()));
-                        if (!str_tag_name_flag){
-                            str_tag_name = "";
-                        }
+                        str_tag_name =MyApplication.bundle.getString("str_tag_name");
+
                     }
                 }
                 if (MainActivity.viewFlag == 3) {
                     str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
-                    str_tag_name_flag = true;
                 }
 
                 Log.d("OnQBookBoxOkClick","QuestionStrは  "+questionStr);
@@ -186,5 +183,20 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         }
         return string;
     }
+    void addTagSetTotagSpinnerAdapter(){
+        String tagArray[] = new String[tagSet.size()];
+        tagSet.toArray(tagArray);
+        for(int i = 0; i < tagSet.toArray().length; i++) {
+            tagSpinnerAdapter.add(tagArray[i]);
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (MainActivity.viewFlag ==3 ) {
+            MyApplication.bundle.putString("str_tag_name", str_tag_name);
+        }
+    }
+    
 
-}
+    }

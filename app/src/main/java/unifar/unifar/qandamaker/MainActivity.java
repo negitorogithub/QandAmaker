@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     public static ArrayList<HashMap<String, String>> listData;
     public static ArrayList<HashMap<String, String>> qlistData;
     public static ArrayList<HashMap<String, String>> alistData;
+    public static ArrayList<String> taglistData;
     public static String mainValue;
     public static String mainValue_longclick;
     public static String[] arraystr_qbook_names;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         listData = new ArrayList<>();
         qlistData = new ArrayList<>();
         alistData = new ArrayList<>();
+        taglistData = new ArrayList<>();
         hashTemp = new HashMap<>();
         arraystr_qbook_names = this.fileList();
         R_id_listview = (ListView) findViewById(R.id.listView);
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                     return;
                 }
                 if (viewFlag == 2) {
-
+                    reloadLists();
                     Intent intent = new Intent(MyApplication.getAppContext(), DetailQuizActivity.class);
                     startActivity(intent);
                 }
@@ -188,15 +190,14 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
             inputQbookFiles();
         }
         if (viewFlag == 2) {
-            qlistData.clear();
-            alistData.clear();
+
             outputtoFile(mainValue, customizedDialog_questionbook.questionStr);
             outputtoFile(mainValue, customizedDialog_questionbook.answerStr);
             outputtoFile(mainValue, customizedDialog_questionbook.str_tag_name);
             for (int i = 0; i < 97; i++) {
                 outputtoFile(mainValue, String.valueOf(i));
             }
-            inputfromFile(mainValue);
+            reloadLists();
         }
         if (viewFlag == 3) {
             //do nothing
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                             listadd(textBuffer.get(i), "A", "alist");
                             break;
                         case INT_QfileTagIndex:
+                            taglistData.add(textBuffer.get(i));
                             break;
                         // 3-99 lines are empty.
                         case INT_QfileLinesPerOneQuestion-1:
@@ -370,23 +372,28 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         ArrayList<String> contentsArray = null;
         removeExtension(file);
         FileInputStream fileInputStream;
-        String text = null;
-        int line = 0;
+        String text ;
         try {
             fileInputStream = MyApplication.getAppContext().openFileInput(plusTxt(file));
-            String lineBuffer = null;
+            String lineBuffer;
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"), 10000);
             contentsArray = new ArrayList<>();
             while ((lineBuffer = bufferedReader.readLine()) != null) {
                 text = lineBuffer;
                 contentsArray.add(text);
-                line++;
             }
             bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return contentsArray;
+    }
+    public void reloadLists(){
+        qlistData.clear();
+        alistData.clear();
+        taglistData.clear();
+        inputfromFile(mainValue);
+
     }
 }
 
