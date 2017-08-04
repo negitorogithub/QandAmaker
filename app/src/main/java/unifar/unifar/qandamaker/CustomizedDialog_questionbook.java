@@ -29,38 +29,32 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     public  String answerStr;
     public  String str_tag_name;
     public DialogListener dialogListener;
+    String tagArray[] ;
     public static CustomizedDialog_questionbook newInstance() {
         return new CustomizedDialog_questionbook();
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        view.findViewById(R.id.ok_Button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dialogListener != null) {
-                    dialogListener.onClickOk();
-                }
-            }
-        });
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d("onqbook","Dialog onattach");
         if (context instanceof DialogListener) {
             dialogListener = (DialogListener) context;
         }
         tagSet = new HashSet<>(MainActivity.taglistData);
+        tagArray = new String[tagSet.size()];
+        tagSet.toArray(tagArray);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        onSaveInstanceState(Bundle.EMPTY);
+        Log.d("onqbook","onDetach");
         if (MainActivity.viewFlag == 3) {
+            MainActivity.taglistData.add(MyApplication.bundle.getString("str_tag_name"));
+            tagSet = new HashSet<>(MainActivity.taglistData);
+            tagArray = new String[tagSet.size()];
+            tagSet.toArray(tagArray);
             MainActivity.viewFlag =2;
             Log.d("onqbook","3 -> 2");
         }
@@ -110,7 +104,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                                     dialog.show(getFragmentManager(), "dialog_fragment");
                                     Log.d("onqbook","ダイアログ作成");
                                 } else {
-                                    //タグ書き込み
+                                    MyApplication.bundle.putString("str_tag_name",tagArray[position-1]);
                                 }
                                 tagSpinnerAdapter.notifyDataSetChanged();
                             }
@@ -146,11 +140,11 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                     if (MainActivity.viewFlag == 2) {
                         answerStr = ifNullReplace(String.valueOf(answerInput.getText()));
                         str_tag_name =MyApplication.bundle.getString("str_tag_name");
-
                     }
                 }
                 if (MainActivity.viewFlag == 3) {
                     str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
+                    MyApplication.bundle.putString("str_tag_name",str_tag_name);
                 }
 
                 Log.d("OnQBookBoxOkClick","QuestionStrは  "+questionStr);
@@ -184,17 +178,11 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         return string;
     }
     void addTagSetTotagSpinnerAdapter(){
-        String tagArray[] = new String[tagSet.size()];
+        tagSet = new HashSet<>(MainActivity.taglistData);
+        tagArray = new String[tagSet.size()];
         tagSet.toArray(tagArray);
         for(int i = 0; i < tagSet.toArray().length; i++) {
             tagSpinnerAdapter.add(tagArray[i]);
-        }
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (MainActivity.viewFlag ==3 ) {
-            MyApplication.bundle.putString("str_tag_name", str_tag_name);
         }
     }
     

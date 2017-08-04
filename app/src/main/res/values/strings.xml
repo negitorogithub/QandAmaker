@@ -11,5 +11,6 @@
     <string name="tagEditMessage">新しいカテゴリーの名前を入力してください</string>
     <string name="tagSpinnerPrompt">カテゴリーを選択してください</string>
     <string name="prompt">プロンプト</string>
+    <string name="test">test</string>
     <item name="viewpager" type="id" />
 </resources>
