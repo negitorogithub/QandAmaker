@@ -2,15 +2,11 @@ package unifar.unifar.qandamaker;
 
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         R_id_listview = (ListView) findViewById(R.id.listView);
 
         imageViewHeader = (ImageView)getLayoutInflater().inflate(R.layout.qheader,null);
-        Log.d("onqbook","bitmap completed");
         R_id_listview.addHeaderView(imageViewHeader,null,true);
 
         simp = new SimpleAdapter(MyApplication.getAppContext(),
@@ -149,7 +143,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customizedDialog_questionbook.show(getFragmentManager(), "dialog_fragment");
+                MyApplication.bundle.putBoolean(CustomizedDialog_questionbook.IsRecreatedKeyStr, false);
+                customizedDialog_questionbook.show(getFragmentManager(), "firstInputDialog");
             }
         });
 
@@ -210,14 +205,15 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         Log.d("onqbook", "onClickOk();");
         if (viewFlag == 1) {
             listData.clear();
-            makefiles(customizedDialog_questionbook.questionStr);
+            makefiles(MyApplication.bundle.getString("questionStr"));
             inputQbookFiles();
         }
         if (viewFlag == 2) {
             customizedDialog_questionbook.str_tag_name = MyApplication.bundle.getString("str_tag_name");
-            outputtoFile(mainValue, customizedDialog_questionbook.questionStr);
-            outputtoFile(mainValue, customizedDialog_questionbook.answerStr);
-            outputtoFile(mainValue, customizedDialog_questionbook.str_tag_name);
+            Log.d("onqbook", "questionStr:"+customizedDialog_questionbook.questionStr);
+            outputtoFile(mainValue, MyApplication.bundle.getString("questionStr"));
+            outputtoFile(mainValue, MyApplication.bundle.getString("answerStr"));
+            outputtoFile(mainValue, MyApplication.bundle.getString("str_tag_name"));
             for (int i = 0; i < 97; i++) {
                 outputtoFile(mainValue, String.valueOf(i));
             }
