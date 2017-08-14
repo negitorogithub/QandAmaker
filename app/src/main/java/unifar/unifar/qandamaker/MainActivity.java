@@ -1,6 +1,7 @@
 package unifar.unifar.qandamaker;
 
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -87,18 +88,20 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         R_id_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int_onLonglistView_Position = position-1;
-                if (viewFlag == 1) {
-                    mainValue_longclick = (listData.get(int_onLonglistView_Position)).get("main");
-                }
-                if (viewFlag == 2) {
-                    mainValue_longclick = (qlistData.get(int_onLonglistView_Position)).get("main");
-                }
+                if (position != 0) {
+                    int_onLonglistView_Position = position - 1;
+                    if (viewFlag == 1) {
+                        mainValue_longclick = (listData.get(int_onLonglistView_Position)).get("main");
+                    }
+                    if (viewFlag == 2) {
+                        mainValue_longclick = (qlistData.get(int_onLonglistView_Position)).get("main");
+                    }
 
-                Log.d("OnQbook", String.valueOf(mainValue_longclick));
+                    Log.d("OnQbook", String.valueOf(mainValue_longclick));
 
-                DialogFragment dialogFragment = MyAlarm.newInstance();
-                dialogFragment.show(getFragmentManager(), "Alart");
+                    DialogFragment dialogFragment = MyAlarm.newInstance();
+                    dialogFragment.show(getFragmentManager(), "Alart");
+                }
 
 
                 return true;
@@ -144,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
             @Override
             public void onClick(View view) {
                 MyApplication.bundle.putBoolean(CustomizedDialog_questionbook.IsRecreatedKeyStr, false);
+                reloadLists();
                 customizedDialog_questionbook.show(getFragmentManager(), "firstInputDialog");
             }
         });
@@ -218,8 +222,14 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                 outputtoFile(mainValue, String.valueOf(i));
             }
             reloadLists();
+
+
         }
         if (viewFlag == 3) {
+            if (MyApplication.bundle.getBoolean(CustomizedDialog_questionbook.IsRecreatedKeyStr)){
+                Fragment firstDialog = getFragmentManager().findFragmentByTag("firstInputDialog");
+                getFragmentManager().beginTransaction().remove(firstDialog).commit();
+            }
         }
 
     }
@@ -412,8 +422,15 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         qlistData.clear();
         alistData.clear();
         taglistData.clear();
-        inputfromFile(mainValue);
+        if (mainValue != null) {
+            inputfromFile(mainValue);
+        }
 
+    }
+    public void resetBundle() {
+        MyApplication.bundle.putString("answerStr","");
+        MyApplication.bundle.putString("questionStr","");
+        MyApplication.bundle.putString("str_tag_name","");
     }
 
 }

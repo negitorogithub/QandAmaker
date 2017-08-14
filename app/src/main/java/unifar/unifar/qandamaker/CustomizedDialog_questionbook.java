@@ -67,7 +67,6 @@ public class CustomizedDialog_questionbook extends DialogFragment {
             et_question = (EditText) view.findViewById(R.id.questionbox);
             answerInput = (EditText) view.findViewById(R.id.answerbox);
 
-            MyApplication.bundle.putBoolean(IsRecreatedKeyStr, true);
 
             Log.d("onqbook","answerStr："+MyApplication.bundle.getString("answerStr"));
             Log.d("onqbook","questionStr："+MyApplication.bundle.getString("questionStr"));
@@ -135,7 +134,8 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                 case 3:
                     view = inflater.inflate(R.layout.tag_edit_dialog, null, false);
                     tagInput =(EditText)view.findViewById(R.id.tagBox);
-                break;
+
+                    break;
             }
         }
 
@@ -163,12 +163,12 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                     MyApplication.bundle.putString("questionStr",ifNullReplace(String.valueOf(et_question.getText())));
                     if (MainActivity.viewFlag == 2) {
                         MyApplication.bundle.putString("answerStr",ifNullReplace(String.valueOf(answerInput.getText())));
-                        str_tag_name =MyApplication.bundle.getString("str_tag_name");
                     }
                 }
                 if (MainActivity.viewFlag == 3) {
                     str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
                     MyApplication.bundle.putString("str_tag_name",str_tag_name);
+                    MyApplication.bundle.putBoolean(IsRecreatedKeyStr, true);
                 }
 
                 Log.d("OnQBookBoxOkClick","QuestionStrは  "+questionStr);
