@@ -13,4 +13,7 @@
     <string name="prompt">プロンプト</string>
     <string name="test">test</string>
     <item name="viewpager" type="id" />
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+ // TODO:新規タグダイアログでＯＫボタン以外を押してキャンセルしたときの処理を作る
 public class CustomizedDialog_questionbook extends DialogFragment {
     private EditText et_question;
     private EditText answerInput;

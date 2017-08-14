@@ -3,6 +3,7 @@ package unifar.unifar.qandamaker;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -25,8 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-public class MainActivity extends AppCompatActivity implements DialogListener {
+// TODO:戻るボタンの実装
+public class MainActivity extends AppCompatActivity implements DialogListener , ExamDialogFragment.OnFragmentInteractionListener{
 
     public static final int INT_QfileLinesPerOneQuestion = 100;
     public static final int INT_QfileQuestioniIndex = 0;
@@ -135,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
                         startActivity(intent);
                     }else {
                         Log.d("OnQbook", "// do test");
+                        ExamDialogFragment examDialogFragment = new ExamDialogFragment();
+                        examDialogFragment.show(getFragmentManager(),"ExamDialogFragment");
+
                     }
                 }
             }
@@ -433,5 +437,9 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
         MyApplication.bundle.putString("str_tag_name","");
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }
 
