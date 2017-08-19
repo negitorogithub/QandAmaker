@@ -1,17 +1,22 @@
 package unifar.unifar.qandamaker;
 
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.support.annotation.IdRes;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.RadioGroup;
 
 
 /**
@@ -62,9 +67,37 @@ public class ExamDialogFragment extends DialogFragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_exam_dialog, container, false);
-        NumberPicker numberPicker = (NumberPicker)view.findViewById(R.id.numberPicker);
-        numberPicker.setMaxValue(9);
+        int intExamMode = 0 ;
+        final NumberPicker numberPicker = (NumberPicker)view.findViewById(R.id.numberPicker);
+        numberPicker.setMaxValue(MainActivity.qlistData.size());
         numberPicker.setMinValue(1);
+        final RadioGroup examMode = (RadioGroup)view.findViewById(R.id.examMode);
+        examMode.check(R.id.recommended);
+        Button okButton = (Button) view.findViewById(R.id.ok_Button);
+        Button closeButton = (Button) view.findViewById(R.id.close_Button);
+        final Fragment thisInstance =this;
+                okButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MyApplication.getAppContext(), ExamActivity.class);
+                        intent.putExtra("questionAmount", numberPicker.getValue());
+                        if (examMode.getCheckedRadioButtonId() == R.id.random) {
+                            intent.putExtra("examMode", 1);
+                        }else{
+                            intent.putExtra("examMode", 2);
+                        }
+                        startActivity(intent);
+                        getFragmentManager().beginTransaction().remove(thisInstance).commit();
+                    }
+                });
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        getFragmentManager().beginTransaction().remove(thisInstance).commit();
+                    }
+                });
+
 
         return view;
     }
@@ -107,16 +140,7 @@ public class ExamDialogFragment extends DialogFragment{
         lp.height = dialogHeight;
         dialog.getWindow().setAttributes(lp);
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

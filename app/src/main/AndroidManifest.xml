@@ -25,7 +25,8 @@
             android:label="@string/title_activity_detail_quiz"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".FlashActivity" />
-        <activity android:name=".TestActivity"></activity>
+        <activity android:name=".TestActivity" />
+        <activity android:name=".ExamActivity"></activity>
     </application>
 
 </manifest>
