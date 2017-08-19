@@ -7,10 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -24,6 +28,13 @@ import java.util.Collections;
 public class ExamFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     TextView questionText;
+    ListView alternativesListView;
+    ArrayList<String> examQuestionsBuffer;
+    ArrayList<String> examAnswersBuffer;
+    ArrayList<String> examTagsBuffer;
+    List<String> examQuestionsArray ;
+    List<String> examAnswersArray ;
+    List<String> examTagsArray;
 
     public ExamFragment() {
         // Required empty public constructor
@@ -50,15 +61,26 @@ public class ExamFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_exam, container, false);
         questionText = (TextView)view.findViewById(R.id.questionText);
+        alternativesListView = (ListView)view.findViewById(R.id.alternativeList);
         final int QUESTIONAMOUNT = getArguments().getInt("questionAmount");
         final int EXAMMODE = getArguments().getInt("examMode");
-        ArrayList<String> examQuestionsBuffer= new ArrayList<>();
+        examQuestionsBuffer= new ArrayList<>();
+        examAnswersBuffer= new ArrayList<>();
+        examTagsBuffer= new ArrayList<>();
         for (int i = 0; i<MainActivity.qlistData.size(); i++){
             examQuestionsBuffer.add((MainActivity.qlistData.get(i)).get("main"));
+            examAnswersBuffer.add(MainActivity.alistData.get(i));
+            examTagsBuffer.add(MainActivity.taglistData.get(i));
         }
-        Collections.shuffle(examQuestionsBuffer);
-        Object[] examQuestionsArray = (examQuestionsBuffer.subList(0, QUESTIONAMOUNT)).toArray();
-        showQuestion(examQuestionsArray, 0);
+        Random random = new Random();
+        long seed = random.nextLong();
+        Collections.shuffle(examQuestionsBuffer, new Random(seed));
+        Collections.shuffle(examAnswersBuffer, new Random(seed));
+        Collections.shuffle(examTagsBuffer, new Random(seed));
+        examQuestionsArray =  examQuestionsBuffer.subList(0, QUESTIONAMOUNT);
+        examAnswersArray =  examAnswersBuffer.subList(0, QUESTIONAMOUNT);
+        examTagsArray =  examTagsBuffer.subList(0, QUESTIONAMOUNT);
+        showQuestion(0);
         return view;
     }
 
@@ -83,8 +105,13 @@ public class ExamFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-    void showQuestion(Object[] questionList , int index){
-        questionText.setText(questionList[index].toString());
-
+    void showQuestion(int questionIndex){
+        questionText.setText(examQuestionsArray.get(questionIndex));
+        List<String> alterrnatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examTagsArray.get(questionIndex),examAnswersArray.get(questionIndex) );
+        ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<String>(MyApplication.getAppContext(),R.layout.exam_alternatives);
+        for (int i =0; i<alterrnatives.size();i++ ){
+            alternativesAdapter.add(alterrnatives.get(i));
+        }
+        alternativesListView.setAdapter(alternativesAdapter);
     }
 }

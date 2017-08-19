@@ -23,8 +23,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 // TODO:戻るボタンの実装
 public class MainActivity extends AppCompatActivity implements DialogListener , ExamDialogFragment.OnFragmentInteractionListener{
@@ -34,12 +36,11 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
     public static final int INT_QfileAnswerIndex = 1;
     public static final int INT_QfileTagIndex = 2;
 
-
     public static int viewFlag;
     public static int int_listview_position;
     public static ArrayList<HashMap<String, String>> listData;
     public static ArrayList<HashMap<String, String>> qlistData;
-    public static ArrayList<HashMap<String, String>> alistData;
+    public static ArrayList<String> alistData;
     public static ArrayList<String> taglistData;
     public static String mainValue;
     public static String mainValue_longclick;
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
             return;
         }
         if ("alist" == adapter) {
-            alistData.add(new HashMap<>(hashTemp));
+            alistData.add(main);
             return;
         }
         Log.d("onqbook", "listaddの無効なアダプター名が指定されています。" + adapter + "は無効です。simp,qsimp,alistのいずれかを指定してください。");
@@ -441,5 +442,36 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+    public static List<String> makeAlterrnatives(String file , String tagName, String answer){
+        List<String> alternatives;
+        ArrayList<String> textBuffer = inputFromFileToArray(file);
+        List<String> allAnswer = new ArrayList<>();
+        final int FULLALTERNATIVESAMOUNT = 5;
+        int alternativesAmount ;
+        for (int i = 0; i < textBuffer.size(); i++ ){
+            if (i % 100 == INT_QfileTagIndex) {
+                if (textBuffer.get(i).equals(tagName)){
+                    if (! textBuffer.get(i-1).equals(answer)) {
+                        allAnswer.add(textBuffer.get(i-1));
+                    }
+                }
+            }
+        }
+        Collections.shuffle(allAnswer);
+        if (allAnswer.size() <FULLALTERNATIVESAMOUNT-1){
+            alternativesAmount = allAnswer.size();
+        }else{
+            alternativesAmount = FULLALTERNATIVESAMOUNT-1;
+        }
+        alternatives = allAnswer.subList(0,alternativesAmount-1);
+
+        alternatives.add(answer);
+        Collections.shuffle(alternatives);
+        alternatives.remove(alternatives.size()-1);
+        alternatives.add("この選択肢の中には無い");
+        return alternatives;
+    }
+
 }
 
