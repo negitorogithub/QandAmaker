@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,7 +36,8 @@ public class ExamFragment extends Fragment {
     List<String> examQuestionsArray ;
     List<String> examAnswersArray ;
     List<String> examTagsArray;
-
+    int rightAnswer;
+    int questionIndex;
     public ExamFragment() {
         // Required empty public constructor
     }
@@ -81,6 +83,27 @@ public class ExamFragment extends Fragment {
         examAnswersArray =  examAnswersBuffer.subList(0, QUESTIONAMOUNT);
         examTagsArray =  examTagsBuffer.subList(0, QUESTIONAMOUNT);
         showQuestion(0);
+        alternativesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if (position ==rightAnswer) {
+                    if (questionIndex <examQuestionsArray.size()-1) {
+                        //正解時の処理
+                        showQuestion(questionIndex+1);
+                    }else{
+                        //結果発表
+                    }
+                }else{
+                    if (questionIndex <examQuestionsArray.size()-1) {
+                        // 不正解時の処理
+                        showQuestion(questionIndex+1);
+                    }else{
+                        //結果発表
+                    }
+                }
+            }
+        });
         return view;
     }
 
@@ -105,13 +128,16 @@ public class ExamFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-    void showQuestion(int questionIndex){
+    void showQuestion(int questionIndexarg){
+        questionIndex = questionIndexarg;
         questionText.setText(examQuestionsArray.get(questionIndex));
         List<String> alterrnatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examTagsArray.get(questionIndex),examAnswersArray.get(questionIndex) );
-        ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<String>(MyApplication.getAppContext(),R.layout.exam_alternatives);
+        ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(MyApplication.getAppContext(),R.layout.exam_alternatives);
         for (int i =0; i<alterrnatives.size();i++ ){
             alternativesAdapter.add(alterrnatives.get(i));
         }
+        rightAnswer = alterrnatives.indexOf(examAnswersArray.get(questionIndex));
         alternativesListView.setAdapter(alternativesAdapter);
+
     }
 }

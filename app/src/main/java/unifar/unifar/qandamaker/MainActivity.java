@@ -464,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
         }else{
             alternativesAmount = FULLALTERNATIVESAMOUNT-1;
         }
-        alternatives = allAnswer.subList(0,alternativesAmount-1);
+        alternatives = allAnswer.subList(0,alternativesAmount);
 
         alternatives.add(answer);
         Collections.shuffle(alternatives);
