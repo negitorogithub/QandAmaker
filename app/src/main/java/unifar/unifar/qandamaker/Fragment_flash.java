@@ -59,9 +59,9 @@ public class Fragment_flash extends Fragment  {
         rootView = inflater.inflate(R.layout.fragment_fragment_flash, container,false);
         final TextView textView_switch = (TextView)rootView.findViewById(R.id.textview_switch);
         SeekBar seekBar = (SeekBar)rootView.findViewById(R.id.seekBar_flash);
-        int_seekBar_progress = 100;
+        int_seekBar_progress = 500;
         seekBar.setProgress(int_seekBar_progress);
-        seekBar.setMax(5000);
+        seekBar.setMax(10000);
 
 
         seekBar.setOnSeekBarChangeListener(

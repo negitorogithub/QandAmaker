@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 // TODO:戻るボタンの実装
+// TODO:編集機能の実装
+// TODO:OnPause()時のBundleの実装
 public class MainActivity extends AppCompatActivity implements DialogListener , ExamDialogFragment.OnFragmentInteractionListener{
 
     public static final int INT_QfileLinesPerOneQuestion = 100;
@@ -137,8 +139,10 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
                         startActivity(intent);
                     }else {
                         Log.d("OnQbook", "// do test");
-                        ExamDialogFragment examDialogFragment = new ExamDialogFragment();
-                        examDialogFragment.show(getFragmentManager(),"ExamDialogFragment");
+                        if (qlistData.size() != 0) {
+                            ExamDialogFragment examDialogFragment = new ExamDialogFragment();
+                            examDialogFragment.show(getFragmentManager(), "ExamDialogFragment");
+                        }
 
                     }
                 }
@@ -185,18 +189,18 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
         hashTemp.clear();
         hashTemp.put("main", main);
         hashTemp.put("right", eva);
-        if ("simp" == adapter) {
+        if ("simp".equals(adapter)) {
 
             listData.add(new HashMap<>(hashTemp));
             simp.notifyDataSetChanged();
             return;
         }
-        if ("qsimp" == adapter) {
+        if ("qsimp".equals(adapter)) {
             qlistData.add(new HashMap<>(hashTemp));
             qsimp.notifyDataSetChanged();
             return;
         }
-        if ("alist" == adapter) {
+        if ("alist".equals(adapter)) {
             alistData.add(main);
             return;
         }
@@ -298,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
                             listadd(textBuffer.get(i), "Q", "qsimp");
                             break;
                         case INT_QfileAnswerIndex:
-                            listadd(textBuffer.get(i), "A", "alist");
+                            alistData.add(textBuffer.get(i));
                             break;
                         case INT_QfileTagIndex:
                             taglistData.add(textBuffer.get(i));
@@ -353,8 +357,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
 
     public void inputQbookFiles() {
         arraystr_qbook_names = MyApplication.getAppContext().fileList();
-        for (int i = 0; i < arraystr_qbook_names.length; i++) {
-            listadd(removeExtension(arraystr_qbook_names[i]), "B", "simp");
+        for (String arraystr_qbook_name : arraystr_qbook_names) {
+            listadd(removeExtension(arraystr_qbook_name), "B", "simp");
         }
     }
 
@@ -376,9 +380,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
         int delta ;
         for (int i = 0;i < textBufferBuffer.size(); i++){
             delta = i+1 - index*INT_QfileLinesPerOneQuestion;
-            if ((delta>0)&(delta<INT_QfileLinesPerOneQuestion+1)){
-                // do nothing
-            }else {
+            if ( ! ((delta>0)&(delta<INT_QfileLinesPerOneQuestion+1))) {
                 switch (adapter){
                     case "qsimp":
                         text_buffer.add(textBufferBuffer.get(i) );
@@ -394,15 +396,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
 
 
     }
-    public Set<String> makeTagSetfromFile(String file){
-        Set<String> tagSet =new HashSet<>();
-        ArrayList<String> text_buffer ;
-        text_buffer = inputFromFileToArray(file);
-        for (int i = INT_QfileTagIndex; i < text_buffer.size(); i = i+INT_QfileLinesPerOneQuestion){
-            tagSet.add(text_buffer.get(i));
-        }
-        return tagSet;
-    }
+
     public static ArrayList<String> inputFromFileToArray(String file){
         ArrayList<String> contentsArray = null;
         removeExtension(file);
@@ -432,11 +426,6 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
         }
 
     }
-    public void resetBundle() {
-        MyApplication.bundle.putString("answerStr","");
-        MyApplication.bundle.putString("questionStr","");
-        MyApplication.bundle.putString("str_tag_name","");
-    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -465,12 +454,22 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
             alternativesAmount = FULLALTERNATIVESAMOUNT-1;
         }
         alternatives = allAnswer.subList(0,alternativesAmount);
-
         alternatives.add(answer);
         Collections.shuffle(alternatives);
-        alternatives.remove(alternatives.size()-1);
-        alternatives.add("この選択肢の中には無い");
+        if (!(alternatives.size()<3)){
+            alternatives.remove(alternatives.size()-1);
+            alternatives.add("この選択肢の中には無い");
+        }
         return alternatives;
+    }
+    public void makeAnswerHistory(String file, String questionName ,Boolean isCollect){
+
+
+
+
+
+
+
     }
 
 }

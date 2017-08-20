@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
  // TODO:新規タグダイアログでＯＫボタン以外を押してキャンセルしたときの処理を作る
+ // TODO:選択肢が一つの場合スキップ機能
+ // TODO:スキップ機能
 public class CustomizedDialog_questionbook extends DialogFragment {
     private EditText et_question;
     private EditText answerInput;
@@ -176,6 +178,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                     if (dialogListener != null) {
                         dialogListener.onClickOk();
                     }
+
                 dialog.dismiss();
             }
         });

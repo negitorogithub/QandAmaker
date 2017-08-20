@@ -1,8 +1,10 @@
 package unifar.unifar.qandamaker;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,12 @@ public class ExamFragment extends Fragment {
     List<String> examTagsArray;
     int rightAnswer;
     int questionIndex;
+    int alpha;
+    int repeatCnt ;
+    int decrease ;
+    Handler handler;
+    Runnable r;
+
     public ExamFragment() {
         // Required empty public constructor
     }
@@ -50,6 +58,13 @@ public class ExamFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
+        r = new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        };
         if (getArguments() != null) {
 
 
@@ -66,6 +81,8 @@ public class ExamFragment extends Fragment {
         alternativesListView = (ListView)view.findViewById(R.id.alternativeList);
         final int QUESTIONAMOUNT = getArguments().getInt("questionAmount");
         final int EXAMMODE = getArguments().getInt("examMode");
+        alpha = 255;
+
         examQuestionsBuffer= new ArrayList<>();
         examAnswersBuffer= new ArrayList<>();
         examTagsBuffer= new ArrayList<>();
@@ -88,6 +105,7 @@ public class ExamFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position ==rightAnswer) {
+                    onAnswer(true);
                     if (questionIndex <examQuestionsArray.size()-1) {
                         //正解時の処理
                         showQuestion(questionIndex+1);
@@ -95,8 +113,10 @@ public class ExamFragment extends Fragment {
                         //結果発表
                     }
                 }else{
+                    onAnswer(false);
                     if (questionIndex <examQuestionsArray.size()-1) {
                         // 不正解時の処理
+
                         showQuestion(questionIndex+1);
                     }else{
                         //結果発表
@@ -131,13 +151,47 @@ public class ExamFragment extends Fragment {
     void showQuestion(int questionIndexarg){
         questionIndex = questionIndexarg;
         questionText.setText(examQuestionsArray.get(questionIndex));
-        List<String> alterrnatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examTagsArray.get(questionIndex),examAnswersArray.get(questionIndex) );
+        List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examTagsArray.get(questionIndex),examAnswersArray.get(questionIndex) );
         ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(MyApplication.getAppContext(),R.layout.exam_alternatives);
-        for (int i =0; i<alterrnatives.size();i++ ){
-            alternativesAdapter.add(alterrnatives.get(i));
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        rightAnswer = alterrnatives.indexOf(examAnswersArray.get(questionIndex));
+        for (int i =0; i<alternatives.size();i++ ){
+            alternativesAdapter.add(alternatives.get(i));
+        }
+        if (alternatives.contains(examAnswersArray.get(questionIndex))) {
+            rightAnswer = alternatives.indexOf(examAnswersArray.get(questionIndex));
+        }else {
+            rightAnswer = alternatives.size()-1;
+        }
         alternativesListView.setAdapter(alternativesAdapter);
+
+    }
+    void onAnswer(final Boolean collect){
+        handler.removeCallbacks(r);
+        repeatCnt = 0;
+        decrease = 0;
+        alpha = 170;
+        r = new Runnable() {
+            @Override
+            public void run() {
+
+                    if (collect) {
+                        questionText.setBackgroundColor(Color.argb(alpha, 255, 41, 65));
+                    } else {
+                        questionText.setBackgroundColor(Color.argb(alpha, 12, 91, 254));
+                    }
+                    repeatCnt++;
+                    decrease = ((80-repeatCnt)/10);
+                    alpha = alpha - decrease;
+                    if (!(alpha < 0)) {
+                        handler.postDelayed(this, 10);
+                    }
+                }
+        };
+            handler.post(r);
 
     }
 }
