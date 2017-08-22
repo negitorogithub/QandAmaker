@@ -6,5 +6,7 @@
     <color name="colorCollect">#ff3a41</color>
     <color name="colorWrong">#0C5BFE</color>
     <color name="black">#000000</color>
+    <color name="transparentBlack87">#00000057</color>
+
 
 </resources>

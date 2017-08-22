@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFragmentInteractionListener{
+public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFragmentInteractionListener, OnReachedLastQuestionListener{
 
     int questionAmount ;
     int examMode;
@@ -30,5 +30,10 @@ public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFr
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void OnReachedLastQuestion() {
+        finish();
     }
 }

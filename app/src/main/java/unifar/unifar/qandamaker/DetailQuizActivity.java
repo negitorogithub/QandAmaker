@@ -29,6 +29,7 @@ import com.squareup.haha.perflib.Main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class DetailQuizActivity extends AppCompatActivity implements Fragment_flash.OnFragmentInteractionListener{
 
@@ -122,11 +123,11 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
             final TextView textview_switch_name = (TextView) rootView.findViewById(R.id.questionName);
             final TextView textview_tag_name = (TextView) rootView.findViewById(R.id.textView_tag);
             final Bundle bundle = getArguments();
-            final ArrayList<HashMap<String,String>> question_Name = MainActivity.qlistData;
-            final ArrayList<String> answer_Name = MainActivity.alistData;
-            final ArrayList<String> tag_Name = MainActivity.taglistData;
+            final List<String> question_Name = MainActivity.qlistData;
+            final List<String> answer_Name = MainActivity.alistData;
+            final List<String> tag_Name = MainActivity.taglistData;
             //final HashSet<String> tagSet = MainActivity.tagSetData;
-            final String str_question_name = String.valueOf(question_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1).get("main"));
+            final String str_question_name = String.valueOf(question_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_answer_name = String.valueOf(answer_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_tag_name = String.valueOf(tag_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             textview_switch_name.setText(str_question_name);

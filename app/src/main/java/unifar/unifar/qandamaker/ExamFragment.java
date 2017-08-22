@@ -29,12 +29,13 @@ import java.util.Random;
  * create an instance of this fragment.
  */
 public class ExamFragment extends Fragment {
-    private OnFragmentInteractionListener mListener;
+    OnReachedLastQuestionListener onReachedLastQuestionListener;
     TextView questionText;
     ListView alternativesListView;
     ArrayList<String> examQuestionsBuffer;
     ArrayList<String> examAnswersBuffer;
     ArrayList<String> examTagsBuffer;
+    ArrayList<Boolean>examResultsBuffer;
     List<String> examQuestionsArray ;
     List<String> examAnswersArray ;
     List<String> examTagsArray;
@@ -82,12 +83,13 @@ public class ExamFragment extends Fragment {
         final int QUESTIONAMOUNT = getArguments().getInt("questionAmount");
         final int EXAMMODE = getArguments().getInt("examMode");
         alpha = 255;
-
+        final Fragment thisFragment = this;
         examQuestionsBuffer= new ArrayList<>();
         examAnswersBuffer= new ArrayList<>();
         examTagsBuffer= new ArrayList<>();
+        examResultsBuffer = new ArrayList<>();
         for (int i = 0; i<MainActivity.qlistData.size(); i++){
-            examQuestionsBuffer.add((MainActivity.qlistData.get(i)).get("main"));
+            examQuestionsBuffer.add((MainActivity.qlistData.get(i)));
             examAnswersBuffer.add(MainActivity.alistData.get(i));
             examTagsBuffer.add(MainActivity.taglistData.get(i));
         }
@@ -106,20 +108,35 @@ public class ExamFragment extends Fragment {
 
                 if (position ==rightAnswer) {
                     onAnswer(true);
+                    examResultsBuffer.add(true);
                     if (questionIndex <examQuestionsArray.size()-1) {
-                        //正解時の処理
-                        showQuestion(questionIndex+1);
-                    }else{
-                        //結果発表
-                    }
-                }else{
-                    onAnswer(false);
-                    if (questionIndex <examQuestionsArray.size()-1) {
-                        // 不正解時の処理
 
                         showQuestion(questionIndex+1);
                     }else{
-                        //結果発表
+                             // 結果発表
+                        for (int i = 0; i<  examQuestionsArray.size()-1; i++) {
+                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
+                        }
+                        getFragmentManager().beginTransaction().remove(thisFragment).commit();
+
+                        if (onReachedLastQuestionListener != null) {
+                            onReachedLastQuestionListener.OnReachedLastQuestion();
+                        }
+
+                    }
+                }else{
+                    onAnswer(false);
+                    examResultsBuffer.add(false);
+                    if (questionIndex <examQuestionsArray.size()-1) {
+
+                        showQuestion(questionIndex+1);
+                    }else{
+                            // 結果発表
+                        for (int i = 0; i<  examQuestionsArray.size()-1; i++) {
+                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
+                        }
+                        getFragmentManager().beginTransaction().remove(thisFragment).commit();
+
                     }
                 }
             }
@@ -128,26 +145,30 @@ public class ExamFragment extends Fragment {
     }
 
 
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        if (!(context instanceof OnReachedLastQuestionListener)) {
+            throw new ClassCastException("activity が OnOkBtnClickListener を実装していません.");
+        }
+        onReachedLastQuestionListener = ((OnReachedLastQuestionListener) context);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        handler.removeCallbacks(r);
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
+
     void showQuestion(int questionIndexarg){
         questionIndex = questionIndexarg;
         questionText.setText(examQuestionsArray.get(questionIndex));
