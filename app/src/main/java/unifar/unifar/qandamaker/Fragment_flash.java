@@ -30,6 +30,7 @@ public class Fragment_flash extends Fragment  {
     public static int int_seekBar_progress;
 
     private OnFragmentInteractionListener mListener;
+    private ParentActivityFinishInterface parentActivityFinishInterface;
 
     public Fragment_flash() {
         // Required empty public constructor
@@ -134,12 +135,23 @@ public class Fragment_flash extends Fragment  {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        if (context instanceof ParentActivityFinishInterface) {
+            parentActivityFinishInterface = (ParentActivityFinishInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ParentActivityFinishInterface");
+        }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+
+        parentActivityFinishInterface.finishParentActivity();
         mListener = null;
+        parentActivityFinishInterface = null;
+
     }
 
 

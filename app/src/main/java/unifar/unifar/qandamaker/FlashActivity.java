@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class FlashActivity extends AppCompatActivity implements Fragment_flash.OnFragmentInteractionListener{
+public class FlashActivity extends AppCompatActivity implements Fragment_flash.OnFragmentInteractionListener, ParentActivityFinishInterface{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,4 +35,8 @@ public class FlashActivity extends AppCompatActivity implements Fragment_flash.O
     public void onFragmentInteraction(Uri uri) {
 
     }
+    public void finishParentActivity(){
+        finish();
+    }
+
 }

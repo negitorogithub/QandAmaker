@@ -88,10 +88,10 @@ public class ExamFragment extends Fragment {
         examAnswersBuffer= new ArrayList<>();
         examTagsBuffer= new ArrayList<>();
         examResultsBuffer = new ArrayList<>();
-        for (int i = 0; i<MainActivity.qlistData.size(); i++){
-            examQuestionsBuffer.add((MainActivity.qlistData.get(i)));
-            examAnswersBuffer.add(MainActivity.alistData.get(i));
-            examTagsBuffer.add(MainActivity.taglistData.get(i));
+        for (int i = 0; i<MainActivity.getQlistData().size(); i++){
+            examQuestionsBuffer.add((MainActivity.getQlistData().get(i)));
+            examAnswersBuffer.add(MainActivity.getAlistData().get(i));
+            examTagsBuffer.add(MainActivity.getTaglistData().get(i));
         }
         Random random = new Random();
         long seed = random.nextLong();
@@ -114,7 +114,7 @@ public class ExamFragment extends Fragment {
                         showQuestion(questionIndex+1);
                     }else{
                              // 結果発表
-                        for (int i = 0; i<  examQuestionsArray.size()-1; i++) {
+                        for (int i = 0; i<  examQuestionsArray.size(); i++) {
                             MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
                         }
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();

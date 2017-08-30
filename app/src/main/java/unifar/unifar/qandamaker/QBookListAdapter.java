@@ -41,38 +41,49 @@ public class QBookListAdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View v = convertView;
         ViewHolder viewHolder ;
-        if(v == null) {
-            v = inflater.inflate(layoutResource, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.question = (TextView)v.findViewById(R.id.textview_questionListItem) ;
-            viewHolder.question.setText(qlistToShoow.get(position));
-            viewHolder.history = (ImageView)v.findViewById(R.id.questionResult);
 
-            for (int i = 0; i<3 ; i++){
-                    if ((MainActivity.historyData.get(position))[i]) {
-                        viewHolder.correct++;
+            if (v == null || MyApplication.bundle.getBoolean("isChanged")) {
+                MyApplication.bundle.putBoolean("isChanged" ,false);
+
+                v = inflater.inflate(layoutResource, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.question = (TextView) v.findViewById(R.id.textview_questionListItem);
+                viewHolder.question.setText(qlistToShoow.get(position));
+                viewHolder.history = (ImageView) v.findViewById(R.id.questionResult);
+
+                for (int i = 0; i < 3; i++) {
+                    if (MainActivity.getHistoryData().size() > 0) {
+                        if ((MainActivity.getHistoryData().get(position))[i]) {
+                            viewHolder.correct++;
+                        }
                     }
-            }
-            switch (viewHolder.correct){
-                case 0:
-                    viewHolder.fileNameToOpen ="QuestionResult0.png";
-                case 1:
-                    viewHolder.fileNameToOpen ="QuestionResult1.png";
-                case 2:
-                    viewHolder.fileNameToOpen ="QuestionResult2.png";
-                case 3:
-                    viewHolder.fileNameToOpen ="QuestionResult3.png";
-            }
+                }
+                switch (viewHolder.correct) {
+                    case 0:
+                        viewHolder.fileNameToOpen = "images/QuestionResult0.png";
+                        break;
+                    case 1:
+                        viewHolder.fileNameToOpen = "images/QuestionResult1.png";
+                        break;
+                    case 2:
+                        viewHolder.fileNameToOpen = "images/QuestionResult2.png";
+                        break;
+                    case 3:
+                        viewHolder.fileNameToOpen = "images/QuestionResult3.png";
+                        break;
+                }
 
-            try {
-                InputStream istream = MyApplication.getAppContext().getResources().getAssets().open(viewHolder.fileNameToOpen);
-                Bitmap bitmap = BitmapFactory.decodeStream(istream);
-                viewHolder.history.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                Log.d("onqbook","Error on set questionResult");
-            }
+                try {
+                    InputStream inputStream = MyApplication.getAppContext().getResources().getAssets().open(viewHolder.fileNameToOpen);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    viewHolder.history.setImageBitmap(bitmap);
+                    inputStream.close();
+                } catch (IOException e) {
+                    Log.d("onqbook", "Error on set questionResult");
+                }
 
-        }
+            }
 
         return v;
+
     }}

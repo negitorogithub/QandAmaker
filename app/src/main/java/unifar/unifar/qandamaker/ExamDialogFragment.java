@@ -69,7 +69,7 @@ public class ExamDialogFragment extends DialogFragment{
         View view = inflater.inflate(R.layout.fragment_exam_dialog, container, false);
         int intExamMode = 0 ;
         final NumberPicker numberPicker = (NumberPicker)view.findViewById(R.id.numberPicker);
-        numberPicker.setMaxValue(MainActivity.qlistData.size());
+        numberPicker.setMaxValue(MainActivity.getQlistData().size());
         numberPicker.setMinValue(1);
         final RadioGroup examMode = (RadioGroup)view.findViewById(R.id.examMode);
         examMode.check(R.id.recommended);

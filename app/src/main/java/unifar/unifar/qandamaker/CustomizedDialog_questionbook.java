@@ -48,7 +48,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         if (context instanceof DialogListener) {
             dialogListener = (DialogListener) context;
         }
-        tagSet = new LinkedHashSet<>(MainActivity.taglistData);
+        tagSet = new LinkedHashSet<>(MainActivity.getTaglistData());
         tagArray = new String[tagSet.size()];
         tagSet.toArray(tagArray);
     }
@@ -58,8 +58,8 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         super.onDetach();
         Log.d("onqbook","onDetach");
         if (MainActivity.viewFlag == 3) {
-            MainActivity.taglistData.add(MyApplication.bundle.getString("str_tag_name"));
-            Log.d("onqbook","タグリスト："+MainActivity.taglistData);
+            MainActivity.addTaglistData(MyApplication.bundle.getString("str_tag_name"));
+            Log.d("onqbook","タグリスト："+MainActivity.getTaglistData());
             addTagSetTotagSpinnerAdapterAndInflateView();
             MainActivity.viewFlag =2;
             Log.d("onqbook","3 -> 2");
@@ -149,7 +149,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         if (MyApplication.bundle.getBoolean(IsRecreatedKeyStr)){
             et_question.setText(MyApplication.bundle.getString("questionStr"));
             answerInput.setText(MyApplication.bundle.getString("answerStr"));
-            int newTagPosition = MainActivity.qlistData.size()+1;
+            int newTagPosition = MainActivity.getQlistData().size()+1;
             if (newTagPosition ==0) {
                 newTagPosition =1;
             }
@@ -218,7 +218,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         tagSpinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
         tagSpinnerAdapter.clear();
         tagSpinnerAdapter.add("【新規作成】");
-        tagSet = new LinkedHashSet<>(MainActivity.taglistData);
+        tagSet = new LinkedHashSet<>(MainActivity.getTaglistData());
         tagArray = new String[tagSet.size()];
         tagSet.toArray(tagArray);
         for(int i = 0; i < tagSet.toArray().length; i++) {

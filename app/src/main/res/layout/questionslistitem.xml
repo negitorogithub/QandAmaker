@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0.8"
         android:textSize="40sp"
-        android:textColor="@color/transparentBlack87"
+        android:textColor="@color/black"
         android:text="@string/placeholder" />
 
 </LinearLayout>
