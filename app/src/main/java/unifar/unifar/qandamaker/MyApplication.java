@@ -16,7 +16,6 @@ public class MyApplication extends Application {
         LeakCanary.install(this);
         bundle = new Bundle();
         bundle.putString("str_tag_name", "");
-        bundle.putBoolean("isChanged", false);
         MyApplication.bundle.putBoolean("isRecreated", false);
     }
 

@@ -106,6 +106,8 @@ public class ExamFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+
+
                 if (position ==rightAnswer) {
                     onAnswer(true);
                     examResultsBuffer.add(true);
@@ -136,6 +138,9 @@ public class ExamFragment extends Fragment {
                             MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
                         }
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();
+                        if (onReachedLastQuestionListener != null) {
+                            onReachedLastQuestionListener.OnReachedLastQuestion();
+                        }
 
                     }
                 }

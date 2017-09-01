@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -26,9 +25,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 // TODO:戻るボタンの実装
 // TODO:編集機能の実装
 // TODO:OnPause()時のBundleの実装
@@ -59,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
     static QBookListAdapter qsimp;
     public CustomizedDialog_questionbook customizedDialog_questionbook;
     public ImageView imageViewHeader ;
-    public ListView R_id_listview;
+    public static ListView R_id_listview;
     public static int int_onLonglistView_Position;
 
     @Override
@@ -267,49 +264,66 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
 
 
     }
+    static void outputtoFileByList(String file, List<String> list) {
+        removeExtension(file);
+        FileOutputStream fileOutputStream;
+
+        try {
+            fileOutputStream = MyApplication.getAppContext().openFileOutput(plusTxt(file), MODE_APPEND);
+            for (int i =0; i<list.size(); i++) {
+                fileOutputStream.write(list.get(i).getBytes());
+                fileOutputStream.write(13);
+                fileOutputStream.write(10);
+            }
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     static void inputfromFile(String file) {
         ArrayList<String> textBuffer;
         textBuffer = inputFromFileToArray(file);
         Boolean resultsBuffer[] = new Boolean[3];
-        for (int i = 0; i < textBuffer.size();i++) {
-            switch (viewFlag) {
-                case 1:
-                    Log.d("onqbook", "viewFlag = 1でinputfromFileを呼ばないでください");
-                    break;
-                case 2:
-                    switch (i % INT_QfileLinesPerOneQuestion) {
-                        case INT_QfileQuestioniIndex:
-                            addQlistData(textBuffer.get(i));
-                            break;
-                        case INT_QfileAnswerIndex:
-                            addAlistData(textBuffer.get(i));
-                            break;
-                        case INT_QfileTagIndex:
-                            addTaglistData(textBuffer.get(i));
-                            break;
-                        case INT_QfileAnswerHistoryIndex1:
-                            resultsBuffer[0] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
-                            break;
-                        case INT_QfileAnswerHistoryIndex2:
-                            resultsBuffer[1] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
-                            break;
-                        case INT_QfileAnswerHistoryIndex3:
-                            resultsBuffer[2] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
-                            addHistoryData(resultsBuffer.clone());
-                            resultsBuffer[0] = null;
-                            resultsBuffer[1] = null;
-                            resultsBuffer[2] = null;
+        if (textBuffer.size() > 99) {
+            for (int i = 0; i < textBuffer.size(); i++) {
+                switch (viewFlag) {
+                    case 1:
+                        Log.d("onqbook", "viewFlag = 1でinputfromFileを呼ばないでください");
+                        break;
+                    case 2:
+                        switch (i % INT_QfileLinesPerOneQuestion) {
+                            case INT_QfileQuestioniIndex:
+                                addQlistData(textBuffer.get(i));
+                                break;
+                            case INT_QfileAnswerIndex:
+                                addAlistData(textBuffer.get(i));
+                                break;
+                            case INT_QfileTagIndex:
+                                addTaglistData(textBuffer.get(i));
+                                break;
+                            case INT_QfileAnswerHistoryIndex1:
+                                resultsBuffer[0] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                break;
+                            case INT_QfileAnswerHistoryIndex2:
+                                resultsBuffer[1] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                break;
+                            case INT_QfileAnswerHistoryIndex3:
+                                resultsBuffer[2] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                addHistoryData(resultsBuffer.clone());
+                                resultsBuffer[0] = null;
+                                resultsBuffer[1] = null;
+                                resultsBuffer[2] = null;
+                                break;
 
-
-                            break;
-
-                        // 6-99 lines are empty.
-                        case INT_QfileLinesPerOneQuestion-1:
-                            break;
-
-                    }
-
+                            // 6-99 lines are empty.
+                            case INT_QfileLinesPerOneQuestion - 1:
+                                break;
+                        }
+                }
             }
         }
     }
@@ -490,11 +504,9 @@ public class MainActivity extends AppCompatActivity implements DialogListener , 
         }
         resetfiles(file);
 
-        for (int i = 0 ; i < textBufferBuffer.size() ; i++){
-            outputtoFile(file,textBuffer.get(i));
-        }
+        outputtoFileByList(mainValue,textBuffer);
         reloadLists();
-
+        R_id_listview.setAdapter(qsimp);
     }
 
     public static List<String> getListData() {

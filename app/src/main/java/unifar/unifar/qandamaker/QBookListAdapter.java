@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class QBookListAdapter extends ArrayAdapter {
+class QBookListAdapter extends ArrayAdapter {
     private LayoutInflater inflater;
-    int layoutResource;
-    List<String> qlistToShoow;
-    public QBookListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<String> objects) {
+    private int layoutResource;
+    private List<String> qlistToShoow;
+    QBookListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<String> objects) {
         super(context, resource, objects);
         inflater = LayoutInflater.from(context);
         layoutResource = resource;
@@ -42,13 +42,10 @@ public class QBookListAdapter extends ArrayAdapter {
         View v = convertView;
         ViewHolder viewHolder ;
 
-            if (v == null || MyApplication.bundle.getBoolean("isChanged")) {
-                MyApplication.bundle.putBoolean("isChanged" ,false);
-
+            if (v == null ) {
                 v = inflater.inflate(layoutResource, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.question = (TextView) v.findViewById(R.id.textview_questionListItem);
-                viewHolder.question.setText(qlistToShoow.get(position));
                 viewHolder.history = (ImageView) v.findViewById(R.id.questionResult);
 
                 for (int i = 0; i < 3; i++) {
@@ -72,18 +69,20 @@ public class QBookListAdapter extends ArrayAdapter {
                         viewHolder.fileNameToOpen = "images/QuestionResult3.png";
                         break;
                 }
-
-                try {
-                    InputStream inputStream = MyApplication.getAppContext().getResources().getAssets().open(viewHolder.fileNameToOpen);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    viewHolder.history.setImageBitmap(bitmap);
-                    inputStream.close();
-                } catch (IOException e) {
-                    Log.d("onqbook", "Error on set questionResult");
-                }
-
+                v.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder)v.getTag();
             }
 
+        viewHolder.question.setText(qlistToShoow.get(position));
+        try {
+            InputStream inputStream = MyApplication.getAppContext().getResources().getAssets().open(viewHolder.fileNameToOpen);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            viewHolder.history.setImageBitmap(bitmap);
+            inputStream.close();
+        } catch (IOException e) {
+            Log.d("onqbook", "Error on set questionResult");
+        }
         return v;
 
     }}
