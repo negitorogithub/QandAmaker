@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -27,10 +28,12 @@ class QBookListAdapter extends ArrayAdapter {
         inflater = LayoutInflater.from(context);
         layoutResource = resource;
         qlistToShoow = objects;
+
     }
 
 
     private static class ViewHolder {
+        LinearLayout linearLayout;
         ImageView history;
         TextView question;
         int correct;
@@ -45,6 +48,8 @@ class QBookListAdapter extends ArrayAdapter {
             if (v == null ) {
                 v = inflater.inflate(layoutResource, parent, false);
                 viewHolder = new ViewHolder();
+                viewHolder.linearLayout = (LinearLayout)v.findViewById(R.id.questionListItemsParent);
+                viewHolder.linearLayout.setLayoutParams(MainActivity.layoutParams);
                 viewHolder.question = (TextView) v.findViewById(R.id.textview_questionListItem);
                 viewHolder.history = (ImageView) v.findViewById(R.id.questionResult);
 

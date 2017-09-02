@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/questionListItemsParent"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
     >
 
     <ImageView
         android:id="@+id/questionResult"
-        android:layout_width="0dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+
+        android:layout_width="72dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2"
         android:contentDescription="@string/evalution" />
 
     <TextView
         android:id="@+id/textview_questionListItem"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
-        android:textSize="40sp"
+        android:text="@string/placeholder"
         android:textColor="@color/black"
-        android:text="@string/placeholder" />
+        android:textSize="15sp"
+        android:layout_gravity="center"
+
+        />
 
 </LinearLayout>

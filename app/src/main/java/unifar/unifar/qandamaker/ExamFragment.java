@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+// TODO: 試験終了時をどうにかする
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,13 +33,17 @@ public class ExamFragment extends Fragment {
     OnReachedLastQuestionListener onReachedLastQuestionListener;
     TextView questionText;
     ListView alternativesListView;
-    ArrayList<String> examQuestionsBuffer;
-    ArrayList<String> examAnswersBuffer;
-    ArrayList<String> examTagsBuffer;
-    ArrayList<Boolean>examResultsBuffer;
-    List<String> examQuestionsArray ;
-    List<String> examAnswersArray ;
-    List<String> examTagsArray;
+    //ArrayList<String> examQuestionsBuffer;
+    //ArrayList<String> examAnswersBuffer;
+    //ArrayList<String> examTagsBuffer;
+    ArrayList<Question> examQuestionsDataBuffer;
+    //ArrayList<Boolean>examResultsBuffer;
+    //List<String> examQuestionsArray ;
+    //List<String> examAnswersArray ;
+    //List<String> examTagsArray;
+    List<Question> examQuestionsDataArray ;
+
+    Question questionForExam;
     int rightAnswer;
     int questionIndex;
     int alpha;
@@ -51,7 +56,6 @@ public class ExamFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static ExamFragment newInstance() {
         return new ExamFragment();
     }
@@ -76,7 +80,6 @@ public class ExamFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_exam, container, false);
         questionText = (TextView)view.findViewById(R.id.questionText);
         alternativesListView = (ListView)view.findViewById(R.id.alternativeList);
@@ -84,23 +87,27 @@ public class ExamFragment extends Fragment {
         final int EXAMMODE = getArguments().getInt("examMode");
         alpha = 255;
         final Fragment thisFragment = this;
-        examQuestionsBuffer= new ArrayList<>();
-        examAnswersBuffer= new ArrayList<>();
-        examTagsBuffer= new ArrayList<>();
-        examResultsBuffer = new ArrayList<>();
+        examQuestionsDataBuffer =new ArrayList<>();
+        questionForExam = new Question();
         for (int i = 0; i<MainActivity.getQlistData().size(); i++){
-            examQuestionsBuffer.add((MainActivity.getQlistData().get(i)));
-            examAnswersBuffer.add(MainActivity.getAlistData().get(i));
-            examTagsBuffer.add(MainActivity.getTaglistData().get(i));
+            questionForExam.questionName = MainActivity.getQlistData().get(i);
+            questionForExam.answerName = MainActivity.getAlistData().get(i);
+            questionForExam.tagName = MainActivity.getTaglistData().get(i);
+            examQuestionsDataBuffer.add(questionForExam.clone());
+
         }
+
         Random random = new Random();
         long seed = random.nextLong();
-        Collections.shuffle(examQuestionsBuffer, new Random(seed));
-        Collections.shuffle(examAnswersBuffer, new Random(seed));
-        Collections.shuffle(examTagsBuffer, new Random(seed));
-        examQuestionsArray =  examQuestionsBuffer.subList(0, QUESTIONAMOUNT);
-        examAnswersArray =  examAnswersBuffer.subList(0, QUESTIONAMOUNT);
-        examTagsArray =  examTagsBuffer.subList(0, QUESTIONAMOUNT);
+        Collections.shuffle(examQuestionsDataBuffer, new Random(seed));
+
+        if (EXAMMODE == 1) {
+            examQuestionsDataArray = examQuestionsDataBuffer.subList(0, QUESTIONAMOUNT);
+        } else if (EXAMMODE ==2){
+            examQuestionsDataArray = examQuestionsDataBuffer.subList(0, QUESTIONAMOUNT);
+
+        }
+
         showQuestion(0);
         alternativesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -110,14 +117,14 @@ public class ExamFragment extends Fragment {
 
                 if (position ==rightAnswer) {
                     onAnswer(true);
-                    examResultsBuffer.add(true);
-                    if (questionIndex <examQuestionsArray.size()-1) {
+                    examQuestionsDataArray.get(questionIndex).resultBuffer = true;
+                    if (questionIndex <examQuestionsDataArray.size()-1) {
 
                         showQuestion(questionIndex+1);
                     }else{
                              // 結果発表
-                        for (int i = 0; i<  examQuestionsArray.size(); i++) {
-                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
+                        for (int i = 0; i<  examQuestionsDataArray.size(); i++) {
+                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examQuestionsDataArray.get(i).questionName , examQuestionsDataArray.get(i).resultBuffer);
                         }
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();
 
@@ -128,14 +135,14 @@ public class ExamFragment extends Fragment {
                     }
                 }else{
                     onAnswer(false);
-                    examResultsBuffer.add(false);
-                    if (questionIndex <examQuestionsArray.size()-1) {
+                    examQuestionsDataArray.get(questionIndex).resultBuffer = false;
+                    if (questionIndex <examQuestionsDataArray.size()-1) {
 
                         showQuestion(questionIndex+1);
                     }else{
                             // 結果発表
-                        for (int i = 0; i<  examQuestionsArray.size()-1; i++) {
-                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examAnswersArray.get(i) , examResultsBuffer.get(i));
+                        for (int i = 0; i<  examQuestionsDataArray.size()-1; i++) {
+                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examQuestionsDataArray.get(i).questionName , examQuestionsDataArray.get(i).resultBuffer);
                         }
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();
                         if (onReachedLastQuestionListener != null) {
@@ -176,8 +183,8 @@ public class ExamFragment extends Fragment {
 
     void showQuestion(int questionIndexarg){
         questionIndex = questionIndexarg;
-        questionText.setText(examQuestionsArray.get(questionIndex));
-        List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examTagsArray.get(questionIndex),examAnswersArray.get(questionIndex) );
+        questionText.setText(examQuestionsDataArray.get(questionIndex).questionName);
+        List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examQuestionsDataArray.get(questionIndex).tagName,examQuestionsDataArray.get(questionIndex).answerName );
         ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(MyApplication.getAppContext(),R.layout.exam_alternatives);
         try {
             Thread.sleep(50);
@@ -187,8 +194,8 @@ public class ExamFragment extends Fragment {
         for (int i =0; i<alternatives.size();i++ ){
             alternativesAdapter.add(alternatives.get(i));
         }
-        if (alternatives.contains(examAnswersArray.get(questionIndex))) {
-            rightAnswer = alternatives.indexOf(examAnswersArray.get(questionIndex));
+        if (alternatives.contains(examQuestionsDataArray.get(questionIndex).answerName)) {
+            rightAnswer = alternatives.indexOf(examQuestionsDataArray.get(questionIndex).answerName);
         }else {
             rightAnswer = alternatives.size()-1;
         }
