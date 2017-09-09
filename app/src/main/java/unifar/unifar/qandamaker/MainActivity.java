@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     public static ListView R_id_listview;
     public static int int_onLonglistView_Position;
     public static LinearLayout.LayoutParams layoutParams;
-    ActionBar actionBar ;
+    Toolbar  toolbar ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -86,8 +87,11 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         arraystr_qbook_names = this.fileList();
         examQuestionsDataBuffer = new ArrayList<>();
 
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
+        toolbar = (Toolbar)findViewById(R.id.toolbar) ;
+        toolbar.setBackgroundColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.colorPrimary));
+        toolbar.setTitleTextColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.white));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         R_id_listview = (ListView) findViewById(R.id.listView);
         imageViewHeader = (ImageView) getLayoutInflater().inflate(R.layout.qheader, null);
         R_id_listview.addHeaderView(imageViewHeader, null, true);

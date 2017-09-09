@@ -3,7 +3,8 @@
     <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:id="@+id/mainactivity"
     android:orientation="vertical"
@@ -20,12 +21,32 @@
         app:layout_anchorGravity="bottom|right"
             app:srcCompat="@android:drawable/ic_input_add" />
 
+    <ImageView
+        android:id="@+id/imageViewHeader"
+        android:scaleType="fitCenter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/test"/>
+
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="?android:windowContentOverlay">
     <RelativeLayout
         android:id="@+id/activityMain_relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
-
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            />
         <ListView
             android:id="@+id/listView"
             android:layout_width="match_parent"
@@ -33,17 +54,14 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:headerDividersEnabled="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-             />
+            android:layout_below="@+id/toolbar" />
 
     </RelativeLayout>
-    <ImageView
-        android:id="@+id/imageViewHeader"
-        android:scaleType="fitCenter"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/test"/>
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
 
