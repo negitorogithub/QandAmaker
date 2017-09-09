@@ -14,10 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import static unifar.unifar.qandamaker.MainActivity.examQuestionsDataBuffer;
 
 // TODO: 試験終了時をどうにかする
 
@@ -33,17 +34,7 @@ public class ExamFragment extends Fragment {
     OnReachedLastQuestionListener onReachedLastQuestionListener;
     TextView questionText;
     ListView alternativesListView;
-    //ArrayList<String> examQuestionsBuffer;
-    //ArrayList<String> examAnswersBuffer;
-    //ArrayList<String> examTagsBuffer;
-    ArrayList<Question> examQuestionsDataBuffer;
-    //ArrayList<Boolean>examResultsBuffer;
-    //List<String> examQuestionsArray ;
-    //List<String> examAnswersArray ;
-    //List<String> examTagsArray;
     List<Question> examQuestionsDataArray ;
-
-    Question questionForExam;
     int rightAnswer;
     int questionIndex;
     int alpha;
@@ -87,23 +78,14 @@ public class ExamFragment extends Fragment {
         final int EXAMMODE = getArguments().getInt("examMode");
         alpha = 255;
         final Fragment thisFragment = this;
-        examQuestionsDataBuffer =new ArrayList<>();
-        questionForExam = new Question();
-        for (int i = 0; i<MainActivity.getQlistData().size(); i++){
-            questionForExam.questionName = MainActivity.getQlistData().get(i);
-            questionForExam.answerName = MainActivity.getAlistData().get(i);
-            questionForExam.tagName = MainActivity.getTaglistData().get(i);
-            examQuestionsDataBuffer.add(questionForExam.clone());
-
-        }
-
-        Random random = new Random();
-        long seed = random.nextLong();
-        Collections.shuffle(examQuestionsDataBuffer, new Random(seed));
 
         if (EXAMMODE == 1) {
+            Random random = new Random();
+            long seed = random.nextLong();
+            Collections.shuffle(examQuestionsDataBuffer, new Random(seed));
             examQuestionsDataArray = examQuestionsDataBuffer.subList(0, QUESTIONAMOUNT);
         } else if (EXAMMODE ==2){
+            Collections.sort(examQuestionsDataBuffer, new CustomComparatorByResult());
             examQuestionsDataArray = examQuestionsDataBuffer.subList(0, QUESTIONAMOUNT);
 
         }
@@ -113,19 +95,17 @@ public class ExamFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
+                final int IntExamQuestionDataArraySize = examQuestionsDataArray.size();
 
                 if (position ==rightAnswer) {
                     onAnswer(true);
-                    examQuestionsDataArray.get(questionIndex).resultBuffer = true;
-                    if (questionIndex <examQuestionsDataArray.size()-1) {
+                    examQuestionsDataArray.get(questionIndex).setResultBuffer(true);
+                    if (questionIndex <IntExamQuestionDataArraySize-1) {
 
                         showQuestion(questionIndex+1);
                     }else{
                              // 結果発表
-                        for (int i = 0; i<  examQuestionsDataArray.size(); i++) {
-                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examQuestionsDataArray.get(i).questionName , examQuestionsDataArray.get(i).resultBuffer);
-                        }
+                            MainActivity.makeAnswerHistoryByQuestionsList(MainActivity.mainValue, examQuestionsDataArray);
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();
 
                         if (onReachedLastQuestionListener != null) {
@@ -135,15 +115,12 @@ public class ExamFragment extends Fragment {
                     }
                 }else{
                     onAnswer(false);
-                    examQuestionsDataArray.get(questionIndex).resultBuffer = false;
-                    if (questionIndex <examQuestionsDataArray.size()-1) {
-
+                    examQuestionsDataArray.get(questionIndex).setResultBuffer(false);
+                    if (questionIndex <IntExamQuestionDataArraySize-1) {
                         showQuestion(questionIndex+1);
                     }else{
                             // 結果発表
-                        for (int i = 0; i<  examQuestionsDataArray.size()-1; i++) {
-                            MainActivity.makeAnswerHistory(MainActivity.mainValue, examQuestionsDataArray.get(i).questionName , examQuestionsDataArray.get(i).resultBuffer);
-                        }
+                            MainActivity.makeAnswerHistoryByQuestionsList(MainActivity.mainValue, examQuestionsDataArray);
                         getFragmentManager().beginTransaction().remove(thisFragment).commit();
                         if (onReachedLastQuestionListener != null) {
                             onReachedLastQuestionListener.OnReachedLastQuestion();
@@ -183,8 +160,8 @@ public class ExamFragment extends Fragment {
 
     void showQuestion(int questionIndexarg){
         questionIndex = questionIndexarg;
-        questionText.setText(examQuestionsDataArray.get(questionIndex).questionName);
-        List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examQuestionsDataArray.get(questionIndex).tagName,examQuestionsDataArray.get(questionIndex).answerName );
+        questionText.setText(examQuestionsDataArray.get(questionIndex).getQuestionName());
+        List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examQuestionsDataArray.get(questionIndex).getTagName(),examQuestionsDataArray.get(questionIndex).getAnswerName() );
         ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(MyApplication.getAppContext(),R.layout.exam_alternatives);
         try {
             Thread.sleep(50);
@@ -194,8 +171,8 @@ public class ExamFragment extends Fragment {
         for (int i =0; i<alternatives.size();i++ ){
             alternativesAdapter.add(alternatives.get(i));
         }
-        if (alternatives.contains(examQuestionsDataArray.get(questionIndex).answerName)) {
-            rightAnswer = alternatives.indexOf(examQuestionsDataArray.get(questionIndex).answerName);
+        if (alternatives.contains(examQuestionsDataArray.get(questionIndex).getAnswerName())) {
+            rightAnswer = alternatives.indexOf(examQuestionsDataArray.get(questionIndex).getAnswerName());
         }else {
             rightAnswer = alternatives.size()-1;
         }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,7 +41,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements DialogListener, ExamDialogFragment.OnFragmentInteractionListener {
 
     public static final int INT_QfileLinesPerOneQuestion = 100;
-    public static final int INT_QfileQuestioniIndex = 0;
+    public static final int INT_QfileQuestionIndex = 0;
     public static final int INT_QfileAnswerIndex = 1;
     public static final int INT_QfileTagIndex = 2;
     public static final int INT_QfileAnswerHistoryIndex1 = 3;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     private static List<String> alistData;
     private static List<String> taglistData;
     private static List<Boolean[]> historyData;
+    public static ArrayList<Question> examQuestionsDataBuffer;
     public static String mainValue;
     public static String mainValue_longclick;
     public static String[] arraystr_qbook_names;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     public static ListView R_id_listview;
     public static int int_onLonglistView_Position;
     public static LinearLayout.LayoutParams layoutParams;
-
+    ActionBar actionBar ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -81,23 +84,27 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         historyData = new ArrayList<>();
         hashTemp = new HashMap<>();
         arraystr_qbook_names = this.fileList();
+        examQuestionsDataBuffer = new ArrayList<>();
 
-
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
         R_id_listview = (ListView) findViewById(R.id.listView);
-
         imageViewHeader = (ImageView) getLayoutInflater().inflate(R.layout.qheader, null);
         R_id_listview.addHeaderView(imageViewHeader, null, true);
 
-        simp = new ArrayAdapter<>(MyApplication.getAppContext(),
-                R.layout.qbooksitem, listData
+        simp = new QBooksListAdapter(MyApplication.getAppContext(),
+                R.layout.qbooksitem,
+                listData
         );
 
-        qsimp = new QBookListAdapter(MyApplication.getAppContext(), R.layout.questionslistitem, qlistData);
+        qsimp = new QBookListAdapter(MyApplication.getAppContext(),
+                R.layout.questionslistitem,
+                qlistData
+        );
 
 
         inputQbookFiles();
         (R_id_listview).setAdapter(simp);
-
         R_id_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -132,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                         //クイズの画面に遷移
                         mainValue = listData.get(int_listview_position);
                         reloadLists();
+                        Log.d("OnQbook", "to qsimp");
                         (R_id_listview).setAdapter(qsimp);
                     } else {
                         Log.d("OnQbook", "// diplay ad");
@@ -175,8 +183,13 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         super.onWindowFocusChanged(hasFocus);
         R_id_listviewHeight = R_id_listview.getHeight();
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) convertDp2Px(72, MyApplication.getAppContext()));
-    }
+        reloadAdapter();
 
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -295,8 +308,55 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
 
     }
 
+    public static ArrayList<Question> makeQuestionsArrayFromFile(String file){
+        ArrayList<Question> questionArrayList = new ArrayList<>();
+        Question questionForExam = new Question();
+        ArrayList<String> textBuffer = inputFromFileToArray(file);
+        Boolean resultsBuffer[] = new Boolean[3];
+        if (textBuffer.size() > 99) {
+            for (int i = 0; i < textBuffer.size(); i++) {
+                        switch (i % INT_QfileLinesPerOneQuestion) {
+                            case INT_QfileQuestionIndex:
+                                questionForExam.setQuestionName(textBuffer.get(i));
+                                break;
+                            case INT_QfileAnswerIndex:
+                                questionForExam.setAnswerName(textBuffer.get(i));
+
+                                break;
+                            case INT_QfileTagIndex:
+                                questionForExam.setTagName(textBuffer.get(i));
+                                break;
+                            case INT_QfileAnswerHistoryIndex1:
+                                resultsBuffer[0] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                break;
+                            case INT_QfileAnswerHistoryIndex2:
+                                resultsBuffer[1] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                break;
+                            case INT_QfileAnswerHistoryIndex3:
+                                resultsBuffer[2] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
+                                questionForExam.setResults(resultsBuffer.clone());
+                                resultsBuffer[0] = null;
+                                resultsBuffer[1] = null;
+                                resultsBuffer[2] = null;
+                                break;
+                            // 6-99 lines are empty.
+                            case INT_QfileLastIndex+1:
+                                i=i+INT_QfileLinesPerOneQuestion-INT_QfileLastIndex-2;
+                            case INT_QfileLinesPerOneQuestion - 1:
+                                questionForExam.setIndex(i/INT_QfileLinesPerOneQuestion);
+                                questionArrayList.add(questionForExam.clone());
+                                questionForExam.resetAll();
+                                break;
+                        }
+                }
+            }
+        return questionArrayList;
+
+    }
+
 
     static void inputfromFile(String file) {
+        Question questionForExam = new Question();
         ArrayList<String> textBuffer;
         textBuffer = inputFromFileToArray(file);
         Boolean resultsBuffer[] = new Boolean[3];
@@ -308,14 +368,18 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                         break;
                     case 2:
                         switch (i % INT_QfileLinesPerOneQuestion) {
-                            case INT_QfileQuestioniIndex:
+                            case INT_QfileQuestionIndex:
                                 addQlistData(textBuffer.get(i));
+                                questionForExam.setQuestionName(textBuffer.get(i));
                                 break;
                             case INT_QfileAnswerIndex:
                                 addAlistData(textBuffer.get(i));
+                                questionForExam.setAnswerName(textBuffer.get(i));
+
                                 break;
                             case INT_QfileTagIndex:
                                 addTaglistData(textBuffer.get(i));
+                                questionForExam.setTagName(textBuffer.get(i));
                                 break;
                             case INT_QfileAnswerHistoryIndex1:
                                 resultsBuffer[0] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
@@ -326,13 +390,16 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                             case INT_QfileAnswerHistoryIndex3:
                                 resultsBuffer[2] = returnBooleanByString(CustomizedDialog_questionbook.ifNullReplace(textBuffer.get(i)));
                                 addHistoryData(resultsBuffer.clone());
+                                questionForExam.setResults(resultsBuffer.clone());
                                 resultsBuffer[0] = null;
                                 resultsBuffer[1] = null;
                                 resultsBuffer[2] = null;
                                 break;
-
                             // 6-99 lines are empty.
                             case INT_QfileLinesPerOneQuestion - 1:
+                                questionForExam.setIndex(i/INT_QfileLinesPerOneQuestion);
+                                examQuestionsDataBuffer.add(questionForExam.clone());
+                                questionForExam.resetAll();
                                 break;
                         }
                 }
@@ -428,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     }
 
     public static ArrayList<String> inputFromFileToArray(String file) {
-        ArrayList<String> contentsArray = null;
+        ArrayList<String> contentsArray = new ArrayList<>();
         removeExtension(file);
         FileInputStream fileInputStream;
         String text;
@@ -449,28 +516,25 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     }
 
     public static void reloadLists() {
+        listData.clear();
         qlistData.clear();
         alistData.clear();
         taglistData.clear();
         historyData.clear();
+        examQuestionsDataBuffer.clear();
+
         if (mainValue != null) {
             inputfromFile(mainValue);
         }
-        ListAdapter wrapperListAdapter = ((WrapperListAdapter) R_id_listview.getAdapter()).getWrappedAdapter();
-        if (wrapperListAdapter == simp) {
-            R_id_listview.setAdapter(simp);
-        }
-        if (wrapperListAdapter == qsimp) {
-            R_id_listview.setAdapter(qsimp);
-        }
-
-
+        reloadAdapter();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
+
+
 
     public static List<String> makeAlterrnatives(String file, String tagName, String answer) {
         List<String> alternatives;
@@ -503,34 +567,65 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         return alternatives;
     }
 
-    public static void makeAnswerHistory(String file, String questionName, Boolean isCollect) {
+    public static void makeAnswerHistoryByQuestionsList(String file,List<Question> questionList) {
         ArrayList<String> textBuffer = new ArrayList<>();
         ArrayList<String> textBufferBuffer = inputFromFileToArray(file);
-
+        Collections.sort(questionList, new Comparator<Question>() {
+            @Override
+            public int compare(Question q1, Question q2) {
+                return q1.getIndex()-q2.getIndex();
+            }
+        });
+        int j=0;
         for (int i = 0; i < textBufferBuffer.size(); i++) {
             textBuffer.add(textBufferBuffer.get(i));
-
-            if (i + 1 - (INT_QfileAnswerHistoryIndex1 - INT_QfileQuestioniIndex) > 0) {
-                if ((questionName.equals(textBufferBuffer.get(i - (INT_QfileAnswerHistoryIndex1 - INT_QfileQuestioniIndex))))) {
+            if (j < questionList.size()) {
+                if (i == questionList.get(j).getIndex() * INT_QfileLinesPerOneQuestion + INT_QfileAnswerHistoryIndex1) {
                     textBuffer.remove(textBuffer.size() - 1);
-                    textBuffer.add(isCollect.toString());
+                    textBuffer.add(questionList.get(j).getResultBuffer().toString());
                     textBuffer.add(textBufferBuffer.get(i));
                 }
-            }
-            if (i + 1 - (INT_QfileAnswerHistoryIndex3 - INT_QfileQuestioniIndex) > 0) {
-                if ((questionName.equals(textBufferBuffer.get(i - (INT_QfileAnswerHistoryIndex3 - INT_QfileQuestioniIndex))))) {
+                if (i == questionList.get(j).getIndex() * INT_QfileLinesPerOneQuestion + INT_QfileAnswerHistoryIndex3) {
                     textBuffer.remove(textBuffer.size() - 1);
                 }
+                if ((i % INT_QfileLinesPerOneQuestion)==INT_QfileLinesPerOneQuestion-1) {
+                    j++;
+                }
             }
-
         }
         resetfiles(file);
-
         outputtoFileByList(mainValue, textBuffer);
         reloadLists();
-        R_id_listview.setAdapter(qsimp);
+        reloadAdapter();
     }
 
+    public static List makeListFromQuetionArray(ArrayList<Question> questionArrayList ,int index){
+        List list = new ArrayList();
+        if (index>INT_QfileLinesPerOneQuestion){
+            Log.d("onqbook", "index size error" );
+        }else{
+            for (int i = 0;i < (questionArrayList.size())*INT_QfileLinesPerOneQuestion ;i++ ){
+                if ((i %INT_QfileLinesPerOneQuestion)==index){
+                    list.add(questionArrayList.get(i/INT_QfileLinesPerOneQuestion).getOBjectFromIndex(index));
+
+                }
+            }
+        }
+        return list;
+
+
+    }
+    public static void reloadAdapter(){
+        ListAdapter wrapperListAdapter = ((WrapperListAdapter) R_id_listview.getAdapter()).getWrappedAdapter();
+        if (wrapperListAdapter == simp) {
+            R_id_listview.setAdapter(simp);
+        }
+        if (wrapperListAdapter == qsimp) {
+            R_id_listview.setAdapter(qsimp);
+        }
+
+
+    }
     /**
      * dpからpixelへの変換
      *
