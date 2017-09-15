@@ -23,10 +23,26 @@
         <activity
             android:name=".DetailQuizActivity"
             android:label="@string/title_activity_detail_quiz"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".FlashActivity" />
-        <activity android:name=".TestActivity" />
-        <activity android:name=".ExamActivity"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:parentActivityName="unifar.unifar.qandamaker.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+              android:value="unifar.unifar.qandamaker.MainActivity" />
+        </activity>
+        <activity android:name=".FlashActivity"
+            android:parentActivityName="unifar.unifar.qandamaker.MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="unifar.unifar.qandamaker.MainActivity" />
+        </activity>
+        <activity android:name=".ExamActivity"
+            android:parentActivityName="unifar.unifar.qandamaker.MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="unifar.unifar.qandamaker.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

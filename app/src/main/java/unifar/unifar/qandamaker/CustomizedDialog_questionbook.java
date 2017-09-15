@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -35,8 +36,9 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     public  String str_tag_name;
     public DialogListener dialogListener;
     public static final String IsRecreatedKeyStr = "isRecreated";
-    String tagArray[] ;
+    String tagArray[];
     static View view;
+    Boolean isOkPressedOn3;
     public static CustomizedDialog_questionbook newInstance() {
         return new CustomizedDialog_questionbook();
     }
@@ -58,25 +60,24 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         super.onDetach();
         Log.d("onqbook","onDetach");
         if (MainActivity.viewFlag == 3) {
-            MainActivity.addTaglistData(MyApplication.bundle.getString("str_tag_name"));
-            Log.d("onqbook","タグリスト："+MainActivity.getTaglistData());
-            addTagSetTotagSpinnerAdapterAndInflateView();
-            MainActivity.viewFlag =2;
-            Log.d("onqbook","3 -> 2");
-            Log.d("onqbook","新規タグの名前："+MyApplication.bundle.getString("str_tag_name"));
+            MainActivity.viewFlag = 2;
+            Log.d("onqbook", "3 -> 2");
+            if (isOkPressedOn3) {
+                MainActivity.addTaglistData(MyApplication.bundle.getString("str_tag_name"));
+                Log.d("onqbook", "タグリスト：" + MainActivity.getTaglistData());
+                addTagSetTotagSpinnerAdapterAndInflateView();
+                Log.d("onqbook", "新規タグの名前：" + MyApplication.bundle.getString("str_tag_name"));
 
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            view = inflater.inflate(R.layout.inputdialog, null, false);
-            et_question = (EditText) view.findViewById(R.id.questionbox);
-            answerInput = (EditText) view.findViewById(R.id.answerbox);
-
-
-            Log.d("onqbook","answerStr："+MyApplication.bundle.getString("answerStr"));
-            Log.d("onqbook","questionStr："+MyApplication.bundle.getString("questionStr"));
-
-            dialog.dismiss();
-            CustomizedDialog_questionbook customizedDialog_questionbook = new CustomizedDialog_questionbook();
-            customizedDialog_questionbook.show(getFragmentManager(),"recreated dialog");
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                view = inflater.inflate(R.layout.inputdialog, null, false);
+                et_question = (EditText) view.findViewById(R.id.questionbox);
+                answerInput = (EditText) view.findViewById(R.id.answerbox);
+                Log.d("onqbook", "answerStr：" + MyApplication.bundle.getString("answerStr"));
+                Log.d("onqbook", "questionStr：" + MyApplication.bundle.getString("questionStr"));
+                dialog.dismiss();
+                CustomizedDialog_questionbook customizedDialog_questionbook = new CustomizedDialog_questionbook();
+                customizedDialog_questionbook.show(getFragmentManager(), "recreated dialog");
+            }
         }
         dialogListener = null;
     }
@@ -84,7 +85,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-
+        isOkPressedOn3 =false;
         if (MainActivity.viewFlag != 1 && MainActivity.viewFlag != 2 && MainActivity.viewFlag != 3){
             Log.d("onqbook","viewFlag:"+MainActivity.viewFlag+"に対応するダイアログはありません。");
         } else {
@@ -103,7 +104,7 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                            if (tagSpinner.isFocusable() == false) {
+                            if (!tagSpinner.isFocusable()) {
                                 tagSpinner.setFocusable(true);
                                 Log.d("onqbook","初回起動");
                             } else {
@@ -162,14 +163,33 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         okButton.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View v){
+
                 if (MainActivity.viewFlag ==1 || MainActivity.viewFlag ==2 ) {
+                    if (String.valueOf(et_question.getText()).equals("")){
+                        Toast.makeText(MyApplication.getAppContext(), getString(R.string.questionInputEmpty),Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     MyApplication.bundle.putString("questionStr",ifNullReplace(String.valueOf(et_question.getText())));
+
                     if (MainActivity.viewFlag == 2) {
+                        if (String.valueOf(answerInput.getText()).equals("")){
+                            Toast.makeText(MyApplication.getAppContext(), getString(R.string.answerInputEmpty),Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        if (tagSpinner.getSelectedItemPosition()==0){
+                            Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagSpinnerEmpty),Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         MyApplication.bundle.putString("answerStr",ifNullReplace(String.valueOf(answerInput.getText())));
                     }
                 }
                 if (MainActivity.viewFlag == 3) {
+                    if (String.valueOf(tagInput.getText()).equals("")){
+                        Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagInputEmpty),Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
+                    isOkPressedOn3 = true;
                     MyApplication.bundle.putString("str_tag_name",str_tag_name);
                     MyApplication.bundle.putBoolean(IsRecreatedKeyStr, true);
                 }
@@ -178,12 +198,12 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                     if (dialogListener != null) {
                         dialogListener.onClickOk();
                     }
-
                 dialog.dismiss();
             }
         });
         closeButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+
                 dialog.dismiss();
             }
         });

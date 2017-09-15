@@ -29,11 +29,6 @@
         android:contentDescription="@string/test"/>
 
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:foreground="?android:windowContentOverlay">
     <RelativeLayout
         android:id="@+id/activityMain_relativeLayout"
         android:layout_width="match_parent"
@@ -43,7 +38,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorPrimaryDark"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             />
@@ -60,8 +55,5 @@
             android:layout_below="@+id/toolbar" />
 
     </RelativeLayout>
-
-    </FrameLayout>
-
 </android.support.design.widget.CoordinatorLayout>
 

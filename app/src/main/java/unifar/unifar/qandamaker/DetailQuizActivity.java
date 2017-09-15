@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -15,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,8 +52,7 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_quiz);
-                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -61,7 +62,12 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
         mViewPager.setId(R.id.container_detail_quiz);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(MainActivity.int_listview_position);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarOnDetailQuizActivity);
+        toolbar.setBackgroundColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.colorPrimaryDark));
+        toolbar.setTitleTextColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.white));
+        toolbar.setTitle(MainActivity.mainValue);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -81,6 +87,10 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home) {
+            finish();
             return true;
         }
 
@@ -123,13 +133,15 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
             final TextView textview_switch_name = (TextView) rootView.findViewById(R.id.questionName);
             final TextView textview_tag_name = (TextView) rootView.findViewById(R.id.textView_tag);
             final Bundle bundle = getArguments();
-            MainActivity.reloadLists();
+            //MainActivity.reloadLists();
             final List<String> question_Name = MainActivity.getQlistData();
             final List<String> answer_Name = MainActivity.getAlistData();
             final List<String> tag_Name = MainActivity.getTaglistData();
             final String str_question_name = String.valueOf(question_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_answer_name = String.valueOf(answer_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_tag_name = String.valueOf(tag_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
+
+
             textview_switch_name.setText(str_question_name);
             textview_tag_name.setText(str_tag_name);
             final Button changebutton = (Button) rootView.findViewById(R.id.changeButton);
@@ -169,6 +181,10 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
             return rootView;
         }
     }
+
+
+
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

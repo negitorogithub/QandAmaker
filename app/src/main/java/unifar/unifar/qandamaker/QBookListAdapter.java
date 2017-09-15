@@ -28,7 +28,6 @@ class QBookListAdapter extends ArrayAdapter {
         inflater = LayoutInflater.from(context);
         layoutResource = resource;
         qlistToShoow = objects;
-
     }
 
 
@@ -52,8 +51,13 @@ class QBookListAdapter extends ArrayAdapter {
                 viewHolder.linearLayout.setLayoutParams(MainActivity.layoutParams);
                 viewHolder.question = (TextView) v.findViewById(R.id.textview_questionListItem);
                 viewHolder.history = (ImageView) v.findViewById(R.id.questionResult);
-
-                for (int i = 0; i < 3; i++) {
+                v.setTag(viewHolder);
+            }else{
+                viewHolder = (ViewHolder)v.getTag();
+            }
+        viewHolder.question.setText(qlistToShoow.get(position));
+        viewHolder.correct = 0;
+        for (int i = 0; i < 3; i++) {
                     if (MainActivity.getHistoryData().size() > 0) {
                         if ((MainActivity.getHistoryData().get(position))[i]) {
                             viewHolder.correct++;
@@ -74,12 +78,6 @@ class QBookListAdapter extends ArrayAdapter {
                         viewHolder.fileNameToOpen = "images/QuestionResult3.png";
                         break;
                 }
-                v.setTag(viewHolder);
-            }else{
-                viewHolder = (ViewHolder)v.getTag();
-            }
-
-        viewHolder.question.setText(qlistToShoow.get(position));
         try {
             InputStream inputStream = MyApplication.getAppContext().getResources().getAssets().open(viewHolder.fileNameToOpen);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

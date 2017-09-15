@@ -1,12 +1,15 @@
 package unifar.unifar.qandamaker;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,10 +38,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-// TODO:戻るボタンの実装
 // TODO:編集機能の実装
 // TODO:OnPause()時のBundleの実装
-// TODO:qsimpのタイトル
 public class MainActivity extends AppCompatActivity implements DialogListener, ExamDialogFragment.OnFragmentInteractionListener {
 
     public static final int INT_QfileLinesPerOneQuestion = 100;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     public static ArrayList<Question> examQuestionsDataBuffer;
     public static String mainValue;
     public static String mainValue_longclick;
+    public static String mainValueOn2;
     public static String[] arraystr_qbook_names;
     public static HashMap<String, String> hashTemp;
     static ArrayAdapter simp;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     public static ListView R_id_listview;
     public static int int_onLonglistView_Position;
     public static LinearLayout.LayoutParams layoutParams;
+    public MainActivity mainActivity;
     Toolbar  toolbar ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +89,14 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         hashTemp = new HashMap<>();
         arraystr_qbook_names = this.fileList();
         examQuestionsDataBuffer = new ArrayList<>();
-
-        toolbar = (Toolbar)findViewById(R.id.toolbar) ;
-        toolbar.setBackgroundColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.colorPrimary));
+        mainActivity = this;
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.colorPrimaryDark));
         toolbar.setTitleTextColor(ContextCompat.getColor(MyApplication.getAppContext(), R.color.white));
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+            toolbar.setElevation(0);
+        }
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         R_id_listview = (ListView) findViewById(R.id.listView);
         imageViewHeader = (ImageView) getLayoutInflater().inflate(R.layout.qheader, null);
         R_id_listview.addHeaderView(imageViewHeader, null, true);
@@ -138,13 +143,10 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                 if (viewFlag == 1) {
                     if (position != 0) {
 
-                        viewFlag = 2;
-                        Log.d("OnQbook", "1 -> 2");
+
                         //クイズの画面に遷移
                         mainValue = listData.get(int_listview_position);
-                        reloadLists();
-                        Log.d("OnQbook", "to qsimp");
-                        (R_id_listview).setAdapter(qsimp);
+                        toQlist();
                     } else {
                         Log.d("OnQbook", "// diplay ad");
                     }
@@ -153,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                 }
                 if (viewFlag == 2) {
                     if (position != 0) {
-                        reloadLists();
+                        //reloadLists();
+                        mainValueOn2=qlistData.get(int_listview_position);
                         Intent intent = new Intent(MyApplication.getAppContext(), DetailQuizActivity.class);
                         startActivity(intent);
                     } else {
@@ -194,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     public void onResume(){
         super.onResume();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -207,10 +211,13 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                toQbooksList();
+                return true;
+            case R.id.action_settings:
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -444,12 +451,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (viewFlag == 2) {
-                Log.d("OnQbook", "2 -> 1");
-                viewFlag = 1;
-                listData.clear();
-                inputQbookFiles();
-                R_id_listview.setAdapter(simp);
-                simp.notifyDataSetChanged();
+               toQbooksList();
                 return false;
             } else {
                 return super.onKeyDown(keyCode, event);
@@ -520,7 +522,6 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
     }
 
     public static void reloadLists() {
-        listData.clear();
         qlistData.clear();
         alistData.clear();
         taglistData.clear();
@@ -533,6 +534,11 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         reloadAdapter();
     }
 
+    void reloadQBooksList(){
+        listData.clear();
+        inputQbookFiles();
+        reloadAdapter();
+    }
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -629,6 +635,27 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
         }
 
 
+    }
+    private void toQlist(){
+        viewFlag = 2;
+        Log.d("OnQbook", "1 -> 2");
+        reloadLists();
+        Log.d("OnQbook", "to qsimp");
+        (R_id_listview).setAdapter(qsimp);
+        toolbar.setTitle(mainValue);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+    private void toQbooksList(){
+        viewFlag = 1;
+        Log.d("OnQbook", "2 -> 1");
+        listData.clear();
+        Log.d("OnQbook", "to simp");
+        inputQbookFiles();
+        R_id_listview.setAdapter(simp);
+        toolbar.setTitle(getResources().getString(R.string.app_name));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
     /**
      * dpからpixelへの変換

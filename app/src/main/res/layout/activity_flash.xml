@@ -7,17 +7,33 @@
     android:orientation="vertical"
     tools:context="unifar.unifar.qandamaker.FlashActivity">
 
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarOnFlashActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:orientation="vertical"
+        android:layout_below="@id/toolbarOnFlashActivity"
         android:id="@+id/container_detail_flash"
         >
 
-
-
     </LinearLayout>
-
+    </RelativeLayout>
 
 
 </LinearLayout >

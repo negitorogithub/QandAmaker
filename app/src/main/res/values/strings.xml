@@ -12,11 +12,14 @@
     <string name="tagSpinnerPrompt">カテゴリーを選択してください</string>
     <string name="prompt">プロンプト</string>
     <string name="test">test</string>
+    <string name="questionInputEmpty">問題を入力してください</string>
+    <string name="answerInputEmpty">解答を入力してください</string>
+    <string name="tagSpinnerEmpty">タグを選択してください</string>
+    <string name="tagInputEmpty">タグの名前を入力してください</string>
     <item name="viewpager" type="id" />
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="evalution">evalution</string>
     <string name="placeholder">placeholder</string>
     <string name="results">results</string>
+    <string name="memory">暗記する!</string>
 </resources>
