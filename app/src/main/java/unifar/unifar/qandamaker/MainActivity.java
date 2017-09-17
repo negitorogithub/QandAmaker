@@ -233,8 +233,6 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
             inputQbookFiles();
         }
         if (viewFlag == 2) {
-            customizedDialog_questionbook.str_tag_name = MyApplication.bundle.getString("str_tag_name");
-            Log.d("onqbook", "questionStr:" + customizedDialog_questionbook.questionStr);
             outputtoFile(mainValue, MyApplication.bundle.getString("questionStr"));
             outputtoFile(mainValue, MyApplication.bundle.getString("answerStr"));
             outputtoFile(mainValue, MyApplication.bundle.getString("str_tag_name"));
@@ -246,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements DialogListener, E
                 outputtoFile(mainValue, String.valueOf(i));
             }
             reloadLists();
-
 
         }
         if (viewFlag == 3) {

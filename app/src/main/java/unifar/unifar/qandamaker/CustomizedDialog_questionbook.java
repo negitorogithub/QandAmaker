@@ -20,7 +20,6 @@ import android.widget.Toast;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
- // TODO:新規タグダイアログでＯＫボタン以外を押してキャンセルしたときの処理を作る
  // TODO:選択肢が一つの場合スキップ機能
  // TODO:スキップ機能
 public class CustomizedDialog_questionbook extends DialogFragment {
@@ -31,9 +30,6 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     private ArrayAdapter<String> tagSpinnerAdapter;
     private Dialog dialog;
     public LinkedHashSet<String> tagSet;
-    public  String questionStr;
-    public  String answerStr;
-    public  String str_tag_name;
     public DialogListener dialogListener;
     public static final String IsRecreatedKeyStr = "isRecreated";
     String tagArray[];
@@ -62,21 +58,12 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         if (MainActivity.viewFlag == 3) {
             MainActivity.viewFlag = 2;
             Log.d("onqbook", "3 -> 2");
-            if (isOkPressedOn3) {
-                MainActivity.addTaglistData(MyApplication.bundle.getString("str_tag_name"));
-                Log.d("onqbook", "タグリスト：" + MainActivity.getTaglistData());
-                addTagSetTotagSpinnerAdapterAndInflateView();
-                Log.d("onqbook", "新規タグの名前：" + MyApplication.bundle.getString("str_tag_name"));
-
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                view = inflater.inflate(R.layout.inputdialog, null, false);
-                et_question = (EditText) view.findViewById(R.id.questionbox);
-                answerInput = (EditText) view.findViewById(R.id.answerbox);
-                Log.d("onqbook", "answerStr：" + MyApplication.bundle.getString("answerStr"));
-                Log.d("onqbook", "questionStr：" + MyApplication.bundle.getString("questionStr"));
-                dialog.dismiss();
+            if (MyApplication.bundle.getBoolean(IsRecreatedKeyStr)) {
                 CustomizedDialog_questionbook customizedDialog_questionbook = new CustomizedDialog_questionbook();
                 customizedDialog_questionbook.show(getFragmentManager(), "recreated dialog");
+                MainActivity.addTaglistData(MyApplication.bundle.getString("str_tag_name"));
+                Log.d("onqbook", "タグリスト：" + MainActivity.getTaglistData());
+                Log.d("onqbook", "新規タグの名前：" + MyApplication.bundle.getString("str_tag_name"));
             }
         }
         dialogListener = null;
@@ -85,7 +72,6 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        isOkPressedOn3 =false;
         if (MainActivity.viewFlag != 1 && MainActivity.viewFlag != 2 && MainActivity.viewFlag != 3){
             Log.d("onqbook","viewFlag:"+MainActivity.viewFlag+"に対応するダイアログはありません。");
         } else {
@@ -108,19 +94,23 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                                 tagSpinner.setFocusable(true);
                                 Log.d("onqbook","初回起動");
                             } else {
-                                if (position == 0) {
-                                    //タグ新規作成のダイアログ作成
-                                    if (MainActivity.viewFlag ==2){
-                                        MyApplication.bundle.putString("answerStr",ifNullReplace(String.valueOf(answerInput.getText())));
-                                        MyApplication.bundle.putString("questionStr",ifNullReplace(String.valueOf(et_question.getText())));
-                                        MainActivity.viewFlag = 3;
-                                        Log.d("onqbook","2 -> 3");
+                                if (!MyApplication.bundle.getBoolean(IsRecreatedKeyStr)) {
+                                    if (position == 0) {
+                                        //タグ新規作成のダイアログ作成
+                                        if (MainActivity.viewFlag == 2) {
+                                            MyApplication.bundle.putString("answerStr", ifNullReplace(String.valueOf(answerInput.getText())));
+                                            MyApplication.bundle.putString("questionStr", ifNullReplace(String.valueOf(et_question.getText())));
+                                            MainActivity.viewFlag = 3;
+                                            Log.d("onqbook", "2 -> 3");
+                                        }
+                                        final CustomizedDialog_questionbook dialog = new CustomizedDialog_questionbook();
+                                        dialog.show(getFragmentManager(), "tagInputDialog");
+                                        Log.d("onqbook", "ダイアログ作成");
+                                    } else {
+                                        MyApplication.bundle.putString("str_tag_name", tagArray[position - 1]);
                                     }
-                                    final CustomizedDialog_questionbook dialog = new CustomizedDialog_questionbook();
-                                    dialog.show(getFragmentManager(), "tagInputDialog");
-                                    Log.d("onqbook","ダイアログ作成");
-                                } else {
-                                    MyApplication.bundle.putString("str_tag_name",tagArray[position-1]);
+                                }else{
+                                    MyApplication.bundle.putString("str_tag_name", tagArray[position]);
                                 }
                                 tagSpinnerAdapter.notifyDataSetChanged();
                             }
@@ -148,24 +138,26 @@ public class CustomizedDialog_questionbook extends DialogFragment {
         // viewflag = 2 のときのみ存在
 
         if (MyApplication.bundle.getBoolean(IsRecreatedKeyStr)){
-            et_question.setText(MyApplication.bundle.getString("questionStr"));
-            answerInput.setText(MyApplication.bundle.getString("answerStr"));
-            int newTagPosition = MainActivity.getQlistData().size()+1;
-            if (newTagPosition ==0) {
-                newTagPosition =1;
+            if (MainActivity.viewFlag == 2) {
+                et_question.setText(MyApplication.bundle.getString("questionStr"));
+                answerInput.setText(MyApplication.bundle.getString("answerStr"));
+                int newTagPosition = MainActivity.getQlistData().size() + 1;
+                if (newTagPosition == 0) {
+                    newTagPosition = 1;
+                }
+                tagSpinner.setSelection(newTagPosition, true);
             }
-            tagSpinner.setSelection(newTagPosition,true);
         }
         dialog = new Dialog(getActivity());
         dialog.setTitle("編集画面");
         dialog.setContentView(view);
-
+        dialog.setCanceledOnTouchOutside(false);
         okButton.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View v){
 
                 if (MainActivity.viewFlag ==1 || MainActivity.viewFlag ==2 ) {
-                    if (String.valueOf(et_question.getText()).equals("")){
+                    if (ifNullReplace(String.valueOf(et_question.getText())).equals("")){
                         Toast.makeText(MyApplication.getAppContext(), getString(R.string.questionInputEmpty),Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -188,13 +180,9 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                         Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagInputEmpty),Toast.LENGTH_LONG).show();
                         return;
                     }
-                    str_tag_name = ifNullReplace(String.valueOf(tagInput.getText()));
-                    isOkPressedOn3 = true;
-                    MyApplication.bundle.putString("str_tag_name",str_tag_name);
+                    MyApplication.bundle.putString("str_tag_name",ifNullReplace(String.valueOf(tagInput.getText())));
                     MyApplication.bundle.putBoolean(IsRecreatedKeyStr, true);
                 }
-
-                Log.d("OnQBookBoxOkClick","QuestionStrは  "+questionStr);
                     if (dialogListener != null) {
                         dialogListener.onClickOk();
                     }
@@ -228,16 +216,15 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     @Override
     public void onPause(){
         super.onPause();
-        if (MainActivity.viewFlag == 2){
-
-        }
     }
     void addTagSetTotagSpinnerAdapterAndInflateView(){
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.inputdialog, null, false);
         tagSpinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
         tagSpinnerAdapter.clear();
-        tagSpinnerAdapter.add("【新規作成】");
+        if (! MyApplication.bundle.getBoolean(IsRecreatedKeyStr)) {
+            tagSpinnerAdapter.add("【新規作成】");
+        }
         tagSet = new LinkedHashSet<>(MainActivity.getTaglistData());
         tagArray = new String[tagSet.size()];
         tagSet.toArray(tagArray);

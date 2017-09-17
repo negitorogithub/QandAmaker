@@ -100,7 +100,12 @@ public class ExamFragment extends Fragment {
                 if (position ==rightAnswer) {
                     onAnswer(true);
                     examQuestionsDataArray.get(questionIndex).setResultBuffer(true);
-                    if (questionIndex <IntExamQuestionDataArraySize-1) {
+                }else{
+                    onAnswer(false);
+                    examQuestionsDataArray.get(questionIndex).setResultBuffer(false);
+                }
+
+                if (questionIndex <IntExamQuestionDataArraySize-1) {
 
                         showQuestion(questionIndex+1);
                     }else{
@@ -111,24 +116,8 @@ public class ExamFragment extends Fragment {
                         if (onReachedLastQuestionListener != null) {
                             onReachedLastQuestionListener.OnReachedLastQuestion();
                         }
-
-                    }
-                }else{
-                    onAnswer(false);
-                    examQuestionsDataArray.get(questionIndex).setResultBuffer(false);
-                    if (questionIndex <IntExamQuestionDataArraySize-1) {
-                        showQuestion(questionIndex+1);
-                    }else{
-                            // 結果発表
-                            MainActivity.makeAnswerHistoryByQuestionsList(MainActivity.mainValue, examQuestionsDataArray);
-                        getFragmentManager().beginTransaction().remove(thisFragment).commit();
-                        if (onReachedLastQuestionListener != null) {
-                            onReachedLastQuestionListener.OnReachedLastQuestion();
-                        }
-
                     }
                 }
-            }
         });
         return view;
     }
