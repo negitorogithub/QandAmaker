@@ -140,11 +140,10 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
             final String str_question_name = String.valueOf(question_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_answer_name = String.valueOf(answer_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
             final String str_tag_name = String.valueOf(tag_Name.get(bundle.getInt(ARG_SECTION_NUMBER)-1));
-
-
             textview_switch_name.setText(str_question_name);
-            textview_tag_name.setText(str_tag_name);
+            textview_tag_name.setText(getString(R.string.tag_header, str_tag_name));
             final Button changebutton = (Button) rootView.findViewById(R.id.changeButton);
+            changebutton.setText(R.string.display_answer);
             changebutton.setOnClickListener(new View.OnClickListener() {
                 int flag_change_button = 1;
                 @Override
@@ -152,10 +151,12 @@ public class DetailQuizActivity extends AppCompatActivity implements Fragment_fl
                     switch (flag_change_button){
                         case 1:
                             textview_switch_name.setText(str_answer_name);
+                            changebutton.setText(getString(R.string.display_question));
                             flag_change_button =2;
                             break;
                         case 2:
                             textview_switch_name.setText(str_question_name);
+                            changebutton.setText(getString(R.string.display_answer));
                             flag_change_button =1;
                             break;
                     }

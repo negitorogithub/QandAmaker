@@ -2,7 +2,12 @@
     <string name="app_name">QandAmaker</string>
     <string name="action_settings">Settings</string>
     <string name="question">問題</string>
+    <string name="resultMessage">%1$s問中%2$s問</string>
+    <string name="display_question">問題を表示</string>
+    <string name="display_answer">解答を表示</string>
     <string name="answer">解答</string>
+    <string name="correct">正解</string>
+    <string name="finish">終了</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_detail_quiz">DetailQuizActivity</string>
     <string name="Qbook_delete">一度消去した問題集と、そのデータは二度と元に戻せません。それでも&lt;u>&lt;i>&lt;b>%1$s&lt;/b>&lt;/i>&lt;/u>を消去しますか？</string>
@@ -22,4 +27,6 @@
     <string name="placeholder">placeholder</string>
     <string name="results">results</string>
     <string name="memory">暗記する!</string>
+    <string name="exam">exam</string>
+    <string name="tag_header">タグ:#%1$s</string>
 </resources>

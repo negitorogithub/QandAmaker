@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.style.QuoteSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static unifar.unifar.qandamaker.MainActivity.examQuestionsDataBuffer;
+import static unifar.unifar.qandamaker.MainActivity.inputFromFileToArray;
 
 // TODO: 試験終了時をどうにかする
 
@@ -35,6 +43,7 @@ public class ExamFragment extends Fragment {
     TextView questionText;
     ListView alternativesListView;
     List<Question> examQuestionsDataArray ;
+    LayoutInflater thisInflter;
     int rightAnswer;
     int questionIndex;
     int alpha;
@@ -42,7 +51,7 @@ public class ExamFragment extends Fragment {
     int decrease ;
     Handler handler;
     Runnable r;
-
+    AdView adView;
     public ExamFragment() {
         // Required empty public constructor
     }
@@ -69,8 +78,9 @@ public class ExamFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+        thisInflter =inflater;
         View view = inflater.inflate(R.layout.fragment_exam, container, false);
         questionText = (TextView)view.findViewById(R.id.questionText);
         alternativesListView = (ListView)view.findViewById(R.id.alternativeList);
@@ -106,22 +116,29 @@ public class ExamFragment extends Fragment {
                 }
 
                 if (questionIndex <IntExamQuestionDataArraySize-1) {
-
                         showQuestion(questionIndex+1);
                     }else{
-                             // 結果発表
-                            MainActivity.makeAnswerHistoryByQuestionsList(MainActivity.mainValue, examQuestionsDataArray);
-                        getFragmentManager().beginTransaction().remove(thisFragment).commit();
-
-                        if (onReachedLastQuestionListener != null) {
-                            onReachedLastQuestionListener.OnReachedLastQuestion();
+                    // 結果発表
+                    //処理待ち
+                    List<Boolean> examResults = new ArrayList<>();
+                    for(int i=0;i<examQuestionsDataArray.size();i++ ) {
+                        examResults.add(examQuestionsDataArray.get(i).getResultBuffer());
+                    }
+                    MainActivity.makeAnswerHistoryByQuestionsList(MainActivity.mainValue, examQuestionsDataArray);
+                    int correct =0;
+                    for (int i =0;i<IntExamQuestionDataArraySize;i++) {
+                        if (examResults.get(i)){
+                            correct++;
                         }
+                    }
+                    if (onReachedLastQuestionListener != null) {
+                        onReachedLastQuestionListener.OnReachedLastQuestion(IntExamQuestionDataArraySize,correct);
+                    }
                     }
                 }
         });
         return view;
     }
-
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
@@ -134,10 +151,11 @@ public class ExamFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        if (!(context instanceof OnReachedLastQuestionListener)) {
+        if (context instanceof OnReachedLastQuestionListener) {
+            onReachedLastQuestionListener = (OnReachedLastQuestionListener) context;
+        }else{
             throw new ClassCastException("activity が OnOkBtnClickListener を実装していません.");
         }
-        onReachedLastQuestionListener = ((OnReachedLastQuestionListener) context);
     }
 
     @Override

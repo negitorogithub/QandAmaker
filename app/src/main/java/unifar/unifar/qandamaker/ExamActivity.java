@@ -10,12 +10,17 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFragmentInteractionListener, OnReachedLastQuestionListener{
+public class ExamActivity extends AppCompatActivity implements
+        ExamFragment.OnFragmentInteractionListener,
+        OnReachedLastQuestionListener,
+        ResultFragment.OnFragmentInteractionListener,
+        OnResultFragmentFinishListener {
 
     int questionAmount ;
     int examMode;
     Toolbar toolbar ;
-
+    ExamFragment examfragment;
+    ResultFragment resultFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +28,7 @@ public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFr
         Intent intent = getIntent();
         questionAmount = intent.getIntExtra("questionAmount",1);
         examMode = intent.getIntExtra("examMode", 0);
-        ExamFragment examfragment = new ExamFragment();
+        examfragment = new ExamFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("questionAmount", questionAmount);
         bundle.putInt("examMode", examMode);
@@ -55,7 +60,19 @@ public class ExamActivity extends AppCompatActivity implements ExamFragment.OnFr
         return super.onOptionsItemSelected(item);
     }
     @Override
-    public void OnReachedLastQuestion() {
+    public void OnReachedLastQuestion(int questionAmount, int correct) {
+        getSupportFragmentManager().beginTransaction().remove(examfragment).commit();
+        resultFragment = new ResultFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("QUESTION_AMOUNT",questionAmount);
+        bundle.putInt("CORRECT_AMOUNT",correct);
+        resultFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.examActivityContainer, resultFragment).commit();
+    }
+
+    @Override
+    public void onResultFragmentFinish() {
+        getSupportFragmentManager().beginTransaction().remove(resultFragment).commit();
         finish();
     }
 }

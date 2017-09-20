@@ -47,7 +47,7 @@ public class FlashActivity extends AppCompatActivity implements Fragment_flash.O
         switch (id) {
             case android.R.id.home:
                 finish();
-                return super.onOptionsItemSelected(item);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

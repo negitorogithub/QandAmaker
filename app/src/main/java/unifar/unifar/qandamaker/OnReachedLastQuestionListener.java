@@ -1,5 +1,5 @@
 package unifar.unifar.qandamaker;
 
 public interface OnReachedLastQuestionListener {
-    void OnReachedLastQuestion();
+    void OnReachedLastQuestion(int questionsAmount, int correctAmount);
 }
