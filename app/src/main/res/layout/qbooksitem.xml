@@ -4,7 +4,7 @@
     android:id="@+id/questionBookListItemsParent"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="56dp"
     >
 
     <ImageView
@@ -20,12 +20,11 @@
 
     <TextView
         android:id="@+id/textview_questionBooksListItem"
+        style="@style/AppTheme.normalJapaneseTextView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/placeholder"
-        android:textColor="@color/black"
-        android:textSize="15sp"
         android:gravity="center|start"
+        android:text="@string/placeholder"
 
         />
 

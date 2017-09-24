@@ -29,4 +29,13 @@
     <string name="memory">暗記する!</string>
     <string name="exam">exam</string>
     <string name="tag_header">タグ:#%1$s</string>
+    <string name="same_question_exsits">同じ問題があります  違う問題を入力してください</string>
+    <string name="same_tag_exists">同じ名前のタグがあります  違うタグの名前を入力してください</string>
+    <string name="random">ランダム</string>
+    <string name="recommended">おすすめ</string>
+    <string name="qusstion">問</string>
+    <string name="close">close</string>
+    <string name="ok">Ok</string>
+    <string name="emptyOnMain1">問題集がありません。問題集を追加するには、右下の[+]ボタンを押してください。</string>
+    <string name="emptyOnMain2">問題がありません。問題を追加するには、右下の[+]ボタンを押してください。</string>
 </resources>

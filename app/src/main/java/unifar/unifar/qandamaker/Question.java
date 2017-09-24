@@ -11,6 +11,19 @@ class Question implements Cloneable{
 
 
     private int index;
+
+
+    Question(String questionName, String answerName, String tagName, Boolean[] results, int index){
+        this.setQuestionName(questionName);
+        this.setAnswerName(answerName);
+        this.setTagName(tagName);
+        this.setResults(results);
+        this.setIndex(index);
+    }
+
+    Question() {
+    }
+
     void resetAll(){
         this.setQuestionName(null);
         this.setAnswerName(null);

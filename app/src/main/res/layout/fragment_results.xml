@@ -13,7 +13,8 @@
         android:layout_height="0dp"
         android:layout_weight="0.1"
         android:textColor="@color/colorCollect"
-        android:textSize="40sp"
+        android:alpha="1.0"
+        style="@style/AppTheme.displayJapaneseTextView.1"
         android:gravity="center|center_horizontal"
         android:text="@string/correct"
         />
@@ -24,7 +25,8 @@
         android:layout_height="0dp"
         android:layout_weight="0.2"
         android:textColor="@color/colorCollect"
-        android:textSize="60sp"
+        android:alpha="1.0"
+        style="@style/AppTheme.displayJapaneseTextView.3"
         android:gravity="center|center_horizontal"
         android:text="@string/placeholder" />
 

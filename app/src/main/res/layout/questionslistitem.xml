@@ -4,29 +4,41 @@
     android:id="@+id/questionListItemsParent"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="56dp"
+    android:weightSum="1">
 
     <ImageView
         android:id="@+id/questionResult"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center|start"
         android:layout_width="72dp"
         android:layout_height="match_parent"
-        android:contentDescription="@string/evalution" />
+        android:contentDescription="@string/evalution"
+        android:gravity="center|start"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp" />
 
     <TextView
         android:id="@+id/textview_questionListItem"
-        android:layout_width="match_parent"
+        style="@style/AppTheme.normalJapaneseTextView"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:text="@string/placeholder"
-        android:textColor="@color/black"
-        android:textSize="15sp"
+        android:layout_weight="0.7"
         android:gravity="center|start"
+        android:text="@string/placeholder" />
 
-        />
+    <ImageView
+        android:id="@+id/editOnQuestionList"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:contentDescription="@string/test"
+        android:gravity="center|start"
+        app:srcCompat="@drawable/ic_mode_edit_black_48dp" />
+
 
 </LinearLayout>

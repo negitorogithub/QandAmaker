@@ -7,5 +7,6 @@ package unifar.unifar.qandamaker;
  */
 
  interface DialogListener  {
-public void onClickOk();
+    void onClickOk();
+    void onClickOkOnEditMode(Question question);
 }

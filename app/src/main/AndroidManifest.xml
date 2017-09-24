@@ -9,23 +9,21 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".DetailQuizActivity"
             android:label="@string/title_activity_detail_quiz"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/AppTheme"
             android:parentActivityName="unifar.unifar.qandamaker.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -33,6 +31,8 @@
         </activity>
         <activity android:name=".FlashActivity"
             android:parentActivityName="unifar.unifar.qandamaker.MainActivity"
+            android:theme="@style/AppTheme"
+
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -40,6 +40,7 @@
         </activity>
         <activity android:name=".ExamActivity"
             android:parentActivityName="unifar.unifar.qandamaker.MainActivity"
+            android:theme="@style/AppTheme"
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

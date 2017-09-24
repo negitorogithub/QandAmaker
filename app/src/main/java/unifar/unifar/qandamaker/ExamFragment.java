@@ -169,7 +169,7 @@ public class ExamFragment extends Fragment {
         questionIndex = questionIndexarg;
         questionText.setText(examQuestionsDataArray.get(questionIndex).getQuestionName());
         List<String> alternatives = MainActivity.makeAlterrnatives(MainActivity.mainValue, examQuestionsDataArray.get(questionIndex).getTagName(),examQuestionsDataArray.get(questionIndex).getAnswerName() );
-        ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(MyApplication.getAppContext(),R.layout.exam_alternatives);
+        ArrayAdapter<String> alternativesAdapter = new ArrayAdapter<>(getActivity(),R.layout.exam_alternatives);
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {

@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +24,10 @@ import java.util.LinkedHashSet;
  // TODO:選択肢が一つの場合スキップ機能
  // TODO:スキップ機能
 public class CustomizedDialog_questionbook extends DialogFragment {
-    private EditText et_question;
+     private static String questionName;
+     private static String answerName;
+     private static String tagName;
+     private EditText et_question;
     private EditText answerInput;
     private EditText tagInput;
     private Spinner tagSpinner;
@@ -36,10 +40,20 @@ public class CustomizedDialog_questionbook extends DialogFragment {
     static View view;
     Boolean isOkPressedOn3;
     public static CustomizedDialog_questionbook newInstance() {
+        questionName = "";
+        answerName = "";
+        tagName = "";
         return new CustomizedDialog_questionbook();
     }
+     public static CustomizedDialog_questionbook newInstance( String questionNameArg, String answerNameArg, String tagNameArg) {
+         questionName = questionNameArg;
+         answerName = answerNameArg;
+         tagName = tagNameArg;
+         return new CustomizedDialog_questionbook();
+     }
 
-    @Override
+
+     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Log.d("onqbook","Dialog onattach");
@@ -145,7 +159,14 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                 if (newTagPosition == 0) {
                     newTagPosition = 1;
                 }
-                tagSpinner.setSelection(newTagPosition, true);
+                    tagSpinner.setSelection(newTagPosition, true);
+            }
+        } else if(MyApplication.bundle.getBoolean("isEditMode")){
+
+            if (MainActivity.viewFlag ==2 ) {
+                et_question.setText(CustomizedDialog_questionbook.questionName);
+                answerInput.setText(CustomizedDialog_questionbook.answerName);
+                tagSpinner.setSelection(tagSpinnerAdapter.getPosition(CustomizedDialog_questionbook.tagName), true);
             }
         }
         dialog = new Dialog(getActivity());
@@ -161,18 +182,29 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                         Toast.makeText(MyApplication.getAppContext(), getString(R.string.questionInputEmpty),Toast.LENGTH_LONG).show();
                         return;
                     }
-                    MyApplication.bundle.putString("questionStr",ifNullReplace(String.valueOf(et_question.getText())));
+                    if (MainActivity.makeListFromQuetionArray(MainActivity.examQuestionsDataBuffer, MainActivity.INT_QfileQuestionIndex).contains(ifNullReplace(String.valueOf(et_question.getText())))) {
+                        if (!(MyApplication.bundle.getBoolean("isEditMode"))) {
+                            Toast.makeText(MyApplication.getAppContext(), R.string.same_question_exsits,Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                    }
+                        MyApplication.bundle.putString("questionStr",ifNullReplace(String.valueOf(et_question.getText())));
+
 
                     if (MainActivity.viewFlag == 2) {
                         if (String.valueOf(answerInput.getText()).equals("")){
                             Toast.makeText(MyApplication.getAppContext(), getString(R.string.answerInputEmpty),Toast.LENGTH_LONG).show();
                             return;
                         }
-                        if (tagSpinner.getSelectedItemPosition()==0){
-                            Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagSpinnerEmpty),Toast.LENGTH_LONG).show();
-                            return;
+                        if (!MyApplication.bundle.getBoolean(IsRecreatedKeyStr)) {
+                            if (tagSpinner.getSelectedItemPosition()==0){
+                                Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagSpinnerEmpty),Toast.LENGTH_LONG).show();
+                                return;
+                            }
                         }
                         MyApplication.bundle.putString("answerStr",ifNullReplace(String.valueOf(answerInput.getText())));
+                        MyApplication.bundle.putString("str_tag_name",ifNullReplace(String.valueOf(tagSpinner.getSelectedItem())));
                     }
                 }
                 if (MainActivity.viewFlag == 3) {
@@ -180,18 +212,36 @@ public class CustomizedDialog_questionbook extends DialogFragment {
                         Toast.makeText(MyApplication.getAppContext(), getString(R.string.tagInputEmpty),Toast.LENGTH_LONG).show();
                         return;
                     }
+                    if (MainActivity.makeListFromQuetionArray(MainActivity.examQuestionsDataBuffer, MainActivity.INT_QfileTagIndex).contains(ifNullReplace(String.valueOf(tagInput.getText())))) {
+                        if (!(MyApplication.bundle.getBoolean("isEditMode"))) {
+                            Toast.makeText(MyApplication.getAppContext(), R.string.same_tag_exists, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
                     MyApplication.bundle.putString("str_tag_name",ifNullReplace(String.valueOf(tagInput.getText())));
                     MyApplication.bundle.putBoolean(IsRecreatedKeyStr, true);
                 }
                     if (dialogListener != null) {
-                        dialogListener.onClickOk();
+
+                        if (MyApplication.bundle.getBoolean("isEditMode")) {
+                            Question question = new Question(
+                                    MyApplication.bundle.getString("questionStr"),
+                                    MyApplication.bundle.getString("answerStr"),
+                                    MyApplication.bundle.getString("str_tag_name"),
+                                    MainActivity.examQuestionsDataBuffer.get(MainActivity.int_onListViewPositionOn2).getResults(),
+                                    MainActivity.examQuestionsDataBuffer.get(MainActivity.int_onListViewPositionOn2).getIndex()
+                                    );
+                            dialogListener.onClickOkOnEditMode(question);
+                        } else {
+                            dialogListener.onClickOk();
+                        }
                     }
                 dialog.dismiss();
             }
         });
         closeButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
+                MyApplication.bundle.putBoolean("isEditMode",false);
                 dialog.dismiss();
             }
         });

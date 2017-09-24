@@ -51,9 +51,6 @@ public class QBooksListAdapter extends ArrayAdapter {
                 v = inflater.inflate(layoutResource, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.linearLayout = (LinearLayout)v.findViewById(R.id.questionBookListItemsParent);
-                if (MainActivity.layoutParams != null) {
-                    viewHolder.linearLayout.setLayoutParams(MainActivity.layoutParams);
-                }
                 viewHolder.question = (TextView) v.findViewById(R.id.textview_questionBooksListItem);
                 viewHolder.history = (ImageView) v.findViewById(R.id.questionBooksResult);
 

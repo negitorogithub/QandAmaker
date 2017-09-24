@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.4"
         android:text="@string/placeholder"
-        android:textSize="36sp" />
+       style="@style/AppTheme.displayJapaneseTextView.1" />
 
     <ListView
         android:id="@+id/alternativeList"
